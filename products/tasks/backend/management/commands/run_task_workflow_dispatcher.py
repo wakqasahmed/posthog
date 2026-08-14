@@ -168,7 +168,7 @@ class Command(BaseCommand):
                     id=dispatch.workflow_id,
                     id_reuse_policy=WorkflowIDReusePolicy.ALLOW_DUPLICATE_FAILED_ONLY,
                     task_queue=settings.TASKS_TASK_QUEUE,
-                    retry_policy=RetryPolicy(maximum_attempts=1),
+                    retry_policy=RetryPolicy(maximum_attempts=3),
                     rpc_timeout=timedelta(seconds=settings.TASKS_DISPATCHER_RPC_TIMEOUT_SECONDS),
                 )
             except WorkflowAlreadyStartedError:
