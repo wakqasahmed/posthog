@@ -92,7 +92,14 @@ pub struct PersonhogStore {
     /// it cannot go stale. Every handoff a plan created shares one id,
     /// so without this a reconcile pass over a few hundred frozen
     /// partitions reads the same key a few hundred times.
-    freeze_quorums: Arc<StdMutex<HashMap<String, Vec<String>>>>,
+    ///
+    /// The value keeps the meaning `resolve_freeze_quorum` returns:
+    /// `Some` is a recorded membership, `None` is a record known to be
+    /// absent, which requires every live router. Flattening the two
+    /// would invert the rule — an absent record would come back as
+    /// "require nobody" and advance a handoff no router had stopped
+    /// routing for.
+    freeze_quorums: Arc<StdMutex<HashMap<String, Option<Vec<String>>>>>,
 }
 
 /// Counts store calls by the method that made them. The shared etcd
@@ -813,10 +820,20 @@ impl PersonhogStore {
                     .get(id)
                     .cloned();
                 if let Some(members) = cached {
-                    return Ok(Some(members));
+                    if members.is_none() {
+                        crate::util::record_unresolved_freeze_quorum();
+                    }
+                    return Ok(members);
                 }
                 let members = self.get_freeze_quorum(id).await?;
-                if let Some(members) = &members {
+                // A miss is cached too. Records are written once and only
+                // ever deleted, so an id that resolves to nothing
+                // resolves to nothing forever — and without this a lost
+                // record costs a read and a warning per frozen partition
+                // per pass, which is the amplification this cache exists
+                // to remove, returning on the unwell etcd that most
+                // plausibly lost it.
+                {
                     let mut cache = self
                         .freeze_quorums
                         .lock()

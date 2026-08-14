@@ -4353,8 +4353,9 @@ async fn a_pending_new_owner_is_hinted_but_not_warmed() {
 /// leadership changed. Standing by must cost nothing until the key
 /// actually goes away.
 ///
-/// The fallback re-read is set far beyond the test's own timeouts, so
-/// only the delete can end the wait. That the watch delivers a delete
+/// The fallback re-read is set far beyond the test's own timeouts, and
+/// a successor reclaims the key the instant it is released, so a re-read
+/// cannot end the wait either — only the delete event can. That the watch delivers a delete
 /// landing in the gap between the read and the watch attaching is a
 /// separate property, pinned deterministically by
 /// `a_leader_that_goes_between_the_read_and_the_watch_is_still_delivered`
@@ -4410,8 +4411,21 @@ async fn a_standby_waits_on_the_leader_key_rather_than_campaigning() {
         "a candidate must not enter an election another coordinator holds"
     );
 
-    // Losing the lease deletes the key, which is what ends the wait.
+    // Losing the lease deletes the key — and a successor takes it back
+    // at once, so a re-read can never be what ends the wait. Only the
+    // delete event can, which is what this test is about. etcd rejects a
+    // delete and a put of one key in a single transaction, so a
+    // one-round-trip window remains; a defect large enough to matter
+    // here needs seconds, not that.
     store.revoke_lease(lease_id).await.unwrap();
+    let successor_lease = store.grant_lease(60).await.expect("grant lease");
+    assert!(
+        store
+            .try_acquire_leadership("successor", successor_lease)
+            .await
+            .expect("successor campaign"),
+        "the successor must take the key back"
+    );
     tokio::time::timeout(WAIT_TIMEOUT, waiting)
         .await
         .expect("the watch must wake the candidate when the leader goes")
@@ -4918,25 +4932,42 @@ async fn a_coordinator_that_cannot_reach_etcd_keeps_trying_and_still_stops_on_re
         Arc::clone(&store),
         CoordinatorConfig {
             name: "retrying-coordinator".to_string(),
-            run_retry_backoff: Duration::from_millis(10),
+            // Small, because the pace doubles: the attempt count this
+            // test needs has to fit inside its timeout.
+            run_retry_backoff: Duration::from_millis(1),
             ..Default::default()
         },
         Arc::new(StickyBalancedStrategy),
         None,
     );
+    // Blackholed before the coordinator starts, so its very first
+    // campaign fails: otherwise a campaign that slips through ends its
+    // term by abdication, which is a different arm from the one under
+    // test.
+    proxy.set_blackholed(true);
     let cancel = CancellationToken::new();
     let token = cancel.clone();
-    let mut running = tokio::spawn(async move { coordinator.run(token).await });
+    let running = tokio::spawn(async move { coordinator.run(token).await });
 
-    proxy.set_blackholed(true);
-    proxy.sever();
-
-    // Long enough that a coordinator with any budget at this backoff
-    // would have spent it many times over.
+    // Counting attempts rather than waiting a fixed span. A window only
+    // rules out budgets small enough to be spent inside it — this test
+    // once passed with the exact budget the branch removed re-added,
+    // because ten paced failures outlast three seconds. Attempts are the
+    // fact that distinguishes retrying from having given up, at any
+    // budget.
+    let before = proxy.accepted();
+    wait_for_condition_named(
+        WAIT_TIMEOUT,
+        POLL_INTERVAL,
+        "more attempts than any budget this branch removed",
+        || {
+            let seen = proxy.accepted().saturating_sub(before);
+            async move { seen >= 12 }
+        },
+    )
+    .await;
     assert!(
-        tokio::time::timeout(Duration::from_secs(3), &mut running)
-            .await
-            .is_err(),
+        !running.is_finished(),
         "an unreachable etcd must not make the coordinator give up"
     );
 
@@ -4945,4 +4976,70 @@ async fn a_coordinator_that_cannot_reach_etcd_keeps_trying_and_still_stops_on_re
         .await
         .expect("cancellation must stop the coordinator promptly")
         .expect("the coordinator task must not panic");
+}
+
+/// A membership the cache has learned is absent still requires every
+/// live router, and does not read as "requires nobody".
+///
+/// Those are one `Option` apart and sit on opposite sides of the safety
+/// rule: absent means unknown, which widens the requirement, while an
+/// empty membership is a real snapshot that narrows it to nobody.
+/// Caching the second in place of the first would advance a handoff out
+/// of Freezing before any router had stopped routing to the old owner —
+/// and it would do so on the second resolution, not the first, so a test
+/// that resolves once would not see it.
+#[tokio::test]
+async fn a_cached_absent_membership_still_requires_every_live_router() {
+    let store = test_store("freeze-quorum-cached-absence").await;
+
+    let handoff = HandoffState {
+        partition: 0,
+        old_owner: Some("pod-old".to_string()),
+        new_owner: "pod-new".to_string(),
+        new_owner_address: None,
+        phase: HandoffPhase::Freezing,
+        started_at: 0,
+        handoff_id: "handoff-cached-absence".to_string(),
+        freeze_quorum: None,
+        freeze_quorum_ref: Some("never-written".to_string()),
+        created_at_ms: 0,
+        phase_entered_at_ms: 0,
+    };
+
+    let routers = [
+        RegisteredRouter {
+            router_name: "router-0".to_string(),
+            registered_at: 0,
+            last_heartbeat: 0,
+        },
+        RegisteredRouter {
+            router_name: "router-1".to_string(),
+            registered_at: 0,
+            last_heartbeat: 0,
+        },
+    ];
+    let acks = [RouterFreezeAck {
+        router_name: "router-0".to_string(),
+        partition: 0,
+        acked_at: 0,
+        acked_at_ms: 0,
+        handoff_id: handoff.handoff_id.clone(),
+    }];
+
+    // Resolve twice: the first read populates the cache, the second is
+    // answered from it. Both must say the same thing.
+    for pass in 1..=2 {
+        let quorum = store
+            .resolve_freeze_quorum(&handoff)
+            .await
+            .expect("resolving must not error");
+        assert!(
+            quorum.is_none(),
+            "pass {pass}: an absent record must stay unknown, not become an empty membership"
+        );
+        assert!(
+            !freeze_quorum_met(&routers, &acks, &handoff, quorum.as_deref()),
+            "pass {pass}: one ack of two live routers must not satisfy an absent membership"
+        );
+    }
 }

@@ -102,17 +102,18 @@ impl Default for CoordinatorConfig {
             // wait on any of this — the lease is revoked on the way out.
             leader_lease_ttl: 5,
             keepalive_interval: Duration::from_secs(1),
-            // Paces abdication, which has no backoff of its own.
-
             // How long a standby trusts its watch before re-reading the
             // leader key. This bounds the leaderless window if a watch
             // ever stalls without erroring, and it is the only etcd
             // traffic an idle standby generates, so it buys a wide safety
-            // margin cheaply: one key read per candidate per interval.
+            // margin cheaply: one key read and one watch stream per
+            // candidate per interval, against a campaign per candidate
+            // per retry.
             standby_poll_interval: Duration::from_secs(5),
-            // Matches the pod's and router's supervisors, so the same
-            // budget buys the same tolerance everywhere: ten consecutive
-            // failures span minutes rather than seconds.
+            // The base of the only wait the coordinator has. It doubles
+            // per consecutive bad ending to a 15s cap, so a wedged
+            // coordinator settles into retrying at that cap rather than
+            // hot-looping.
             run_retry_backoff: Duration::from_millis(500),
             backoff_decay_window: Duration::from_secs(300),
             rebalance_debounce_interval: Duration::from_secs(1),
@@ -231,11 +232,10 @@ impl Coordinator {
     /// or cancellation is requested.
     pub async fn run(&self, cancel: CancellationToken) {
         util::preregister_coordinator_metrics();
-        // Paces retries only. It never resets, so it saturates at the
-        // cap: a coordinator that cannot make progress settles into
-        // retrying at the cap, and an isolated failure long after a bad
-        // spell waits the cap once — an order of magnitude inside the
-        // handoff deadline it sits within.
+        // Paces retries only — nothing here escalates. It grows while
+        // bad endings keep arriving and starts over after a quiet
+        // window, so a wedged coordinator settles at the cap while an
+        // isolated failure long after a bad spell still costs the base.
         let mut consecutive_endings = 0u32;
         let mut last_ending: Option<Instant> = None;
         loop {
@@ -945,6 +945,11 @@ impl Coordinator {
                     tracing::debug!(quorum_id = %id, "collected unreferenced freeze quorum");
                 }
                 Err(e) => {
+                    // Counted, not only logged: the router runs at INFO,
+                    // so a sweep whose every delete fails is otherwise
+                    // silent while its backlog grows one record per plan.
+                    counter!("personhog_coordination_freeze_quorum_sweep_failures_total")
+                        .increment(1);
                     tracing::debug!(quorum_id = %id, error = %e, "freeze quorum sweep failed")
                 }
             }

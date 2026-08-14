@@ -822,6 +822,7 @@ pub struct FlakyProxy {
     pub endpoint: String,
     conns: Arc<StdMutex<Vec<tokio::task::JoinHandle<()>>>>,
     blackholed: Arc<AtomicBool>,
+    accepted: Arc<AtomicUsize>,
     listener: tokio::task::JoinHandle<()>,
 }
 
@@ -832,6 +833,8 @@ impl FlakyProxy {
         let conns: Arc<StdMutex<Vec<tokio::task::JoinHandle<()>>>> =
             Arc::new(StdMutex::new(Vec::new()));
         let blackholed = Arc::new(AtomicBool::new(false));
+        let accepted = Arc::new(AtomicUsize::new(0));
+        let accepted_bg = Arc::clone(&accepted);
         let conns_bg = Arc::clone(&conns);
         let blackholed_bg = Arc::clone(&blackholed);
         let listener = tokio::spawn(async move {
@@ -839,6 +842,7 @@ impl FlakyProxy {
                 let Ok((mut client, _)) = socket.accept().await else {
                     return;
                 };
+                accepted_bg.fetch_add(1, Ordering::SeqCst);
                 if blackholed_bg.load(Ordering::SeqCst) {
                     drop(client);
                     continue;
@@ -856,11 +860,22 @@ impl FlakyProxy {
             endpoint,
             conns,
             blackholed,
+            accepted,
             listener,
         }
     }
 
     /// Break every live connection; the streams running over them error
+    /// How many connections the proxy has accepted since it started.
+    ///
+    /// A blackholed proxy drops each one immediately, so a client that
+    /// keeps retrying keeps climbing this — which is what makes "it is
+    /// still trying" a fact a test can wait on rather than a duration it
+    /// hopes is long enough.
+    pub fn accepted(&self) -> usize {
+        self.accepted.load(Ordering::SeqCst)
+    }
+
     /// out. New connections still succeed unless blackholed.
     pub fn sever(&self) {
         for pump in self.conns.lock().unwrap().drain(..) {

@@ -204,14 +204,20 @@ pub async fn run_lease_keepalive(
             // never overstates how much lease is left. Anchoring at the
             // response would credit the round-trip delay to the lease.
             let sent = Instant::now();
+            // Renewals never pass through the store, so without this the
+            // fleet's highest-rate etcd call is absent from both the call
+            // attribution and the op-duration histogram — and after this
+            // crate stopped candidates polling the election, renewals are
+            // what is left at the top.
+            //
+            // The timer is outside the round, not in it: inside, the
+            // timeout below would drop it at `left.min(interval)` and the
+            // histogram could never record a renewal slower than the
+            // keepalive interval — the one thing it would be consulted
+            // for.
+            crate::store::count_call("keep_alive_renewal");
+            let _renewal = assignment_coordination::store::OpTimer::new("keep_alive_renewal");
             let round = async {
-                // Renewals never pass through the store, so without this
-                // the fleet's highest-rate etcd call is absent from both
-                // the call attribution and the op-duration histogram —
-                // and after this crate stopped candidates polling the
-                // election, renewals are what is left at the top.
-                crate::store::count_call("keep_alive_renewal");
-                let _t = assignment_coordination::store::OpTimer::new("keep_alive_renewal");
                 keeper.keep_alive().await?;
                 match stream.message().await? {
                     // Stream end is a connection fact, not a lease fact:
@@ -364,7 +370,6 @@ pub fn preregister_coordinator_metrics() {
     )
     .increment(0);
     metrics::counter!("personhog_coordination_unresolved_freeze_quorums_total").increment(0);
-    metrics::counter!("personhog_coordination_partition_releases_total").increment(0);
     // Burst-shaped: these fire only during a mass cancellation, which is
     // exactly the delta a lazily-registered series loses.
     for reason in ["phase_deadline", "dead_new_owner"] {
@@ -385,6 +390,20 @@ pub fn preregister_coordinator_metrics() {
 /// Same as [`preregister_coordinator_metrics`], for the counters a
 /// writer pod's coordination layer emits.
 pub fn preregister_pod_metrics() {
+    // Emitted by the pod, so it belongs here rather than beside the
+    // coordinator's counters — they run in different binaries, and a
+    // series registered where nothing emits it is a permanent zero.
+    metrics::counter!("personhog_coordination_partition_releases_total").increment(0);
+    metrics::counter!(
+        "personhog_coordination_run_restarts_total",
+        "component" => "pod"
+    )
+    .increment(0);
+    metrics::counter!(
+        "personhog_coordination_keepalive_retries_total",
+        "component" => "pod"
+    )
+    .increment(0);
     for disposition in ["converged", "skipped", "unreadable"] {
         metrics::counter!(
             "personhog_coordination_handoff_events_total",
@@ -397,6 +416,18 @@ pub fn preregister_pod_metrics() {
 /// Same as [`preregister_coordinator_metrics`], for the counters the
 /// router's coordination layer emits.
 pub fn preregister_router_coordination_metrics() {
+    for component in ["router", "coordinator"] {
+        metrics::counter!(
+            "personhog_coordination_keepalive_retries_total",
+            "component" => component
+        )
+        .increment(0);
+    }
+    metrics::counter!(
+        "personhog_coordination_run_restarts_total",
+        "component" => "router"
+    )
+    .increment(0);
     for outcome in ["revoked", "revoke_failed"] {
         metrics::counter!(
             "personhog_coordination_router_deregistered_total",

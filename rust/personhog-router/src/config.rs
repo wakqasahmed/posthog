@@ -261,10 +261,12 @@ pub struct Config {
     pub coordinator_enabled: bool,
 
     /// Lease TTL for the coordinator leader election. A crashed leader
-    /// blocks every handoff until this expires and a survivor's campaign
-    /// fires, so the worst-case coordinator outage is roughly this plus
-    /// the election retry interval. Graceful exits revoke the lease and
-    /// fail over immediately.
+    /// blocks every handoff until this expires and a survivor takes
+    /// over. Survivors watch the leader key, so a succession follows the
+    /// key's deletion rather than a retry tick, and this TTL is what
+    /// bounds an ordinary outage; a survivor already paced by repeated
+    /// bad endings can add up to its 15s cap on top. Graceful exits
+    /// revoke the lease and fail over immediately.
     #[envconfig(default = "5")]
     pub coordinator_lease_ttl: i64,
 
