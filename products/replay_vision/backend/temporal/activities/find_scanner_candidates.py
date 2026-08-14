@@ -72,6 +72,8 @@ def find_scanner_candidates_activity(inputs: FindScannerCandidatesInputs) -> Fin
     candidate_query = ScannerCandidateQuery(
         team=scanner.team,
         query=query,
+        # The exposure filter's access check runs as the creator, matching the defence-in-depth check above.
+        user=scanner.created_by,
         last_swept_at=scanner.last_swept_at,
         sampling_rate=scanner.sampling_rate,
         sampling_salt=str(scanner.id),
@@ -180,6 +182,7 @@ def _deep_sweep(
     deep_query = BackfillCandidateQuery(
         team=scanner.team,
         query=query,
+        user=scanner.created_by,
         window_start=scanner.last_deep_swept_at,
         window_end=scanner.last_swept_at,
         sampling_rate=scanner.sampling_rate,

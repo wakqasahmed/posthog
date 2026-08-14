@@ -130,7 +130,7 @@ def prepare_backfill_tick_activity(inputs: BackfillTickInputs) -> PrepareBackfil
 def find_backfill_candidates_activity(inputs: FindBackfillCandidatesInputs) -> FindBackfillCandidatesOutput:
     backfill = (
         ReplayScannerBackfill.objects.for_team(inputs.team_id)
-        .select_related("team")
+        .select_related("team", "created_by")
         .filter(pk=inputs.backfill_id)
         .first()
     )
@@ -157,6 +157,8 @@ def find_backfill_candidates_activity(inputs: FindBackfillCandidatesInputs) -> F
     candidates = BackfillCandidateQuery(
         team=backfill.team,
         query=query,
+        # The exposure filter's access check runs as whoever launched the backfill.
+        user=backfill.created_by,
         window_start=backfill.window_start,
         window_end=backfill.window_end,
         sampling_rate=snapshot.sampling_rate,
