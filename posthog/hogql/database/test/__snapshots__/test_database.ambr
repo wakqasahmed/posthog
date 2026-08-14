@@ -1320,7 +1320,6 @@
                       "assigned_user_id",
                       "assigned_role_id",
                       "first_seen",
-                      "version",
                       "fp_hash"
                   ],
                   "hogql_value": "fingerprint_issue_state",
@@ -11542,7 +11541,6 @@
                       "assigned_user_id",
                       "assigned_role_id",
                       "first_seen",
-                      "version",
                       "fp_hash"
                   ],
                   "hogql_value": "fingerprint_issue_state",

@@ -434,10 +434,6 @@
                               team_id: {
                                 description: None,
                                 hidden: False
-                              },
-                              version: {
-                                description: "Version of the latest state for this fingerprint.",
-                                hidden: True
                               }
                             },
                             hidden: False,
@@ -514,10 +510,6 @@
                               team_id: {
                                 description: None,
                                 hidden: False
-                              },
-                              version: {
-                                description: "Version of the latest state for this fingerprint.",
-                                hidden: True
                               }
                             },
                             hidden: False,
@@ -594,10 +586,6 @@
                               team_id: {
                                 description: None,
                                 hidden: False
-                              },
-                              version: {
-                                description: "Version of the latest state for this fingerprint.",
-                                hidden: True
                               }
                             },
                             hidden: False,
@@ -674,10 +662,6 @@
                               team_id: {
                                 description: None,
                                 hidden: False
-                              },
-                              version: {
-                                description: "Version of the latest state for this fingerprint.",
-                                hidden: True
                               }
                             },
                             hidden: False,
@@ -754,10 +738,6 @@
                               team_id: {
                                 description: None,
                                 hidden: False
-                              },
-                              version: {
-                                description: "Version of the latest state for this fingerprint.",
-                                hidden: True
                               }
                             },
                             hidden: False,
@@ -834,10 +814,6 @@
                               team_id: {
                                 description: None,
                                 hidden: False
-                              },
-                              version: {
-                                description: "Version of the latest state for this fingerprint.",
-                                hidden: True
                               }
                             },
                             hidden: False,
@@ -914,10 +890,6 @@
                               team_id: {
                                 description: None,
                                 hidden: False
-                              },
-                              version: {
-                                description: "Version of the latest state for this fingerprint.",
-                                hidden: True
                               }
                             },
                             hidden: False,
@@ -994,10 +966,6 @@
                               team_id: {
                                 description: None,
                                 hidden: False
-                              },
-                              version: {
-                                description: "Version of the latest state for this fingerprint.",
-                                hidden: True
                               }
                             },
                             hidden: False,
@@ -3282,10 +3250,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3381,10 +3345,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3480,10 +3440,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3579,10 +3535,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3678,10 +3630,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3777,10 +3725,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3876,10 +3820,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3975,10 +3915,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -5808,10 +5744,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -5888,10 +5820,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -5968,10 +5896,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6048,10 +5972,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6128,10 +6048,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6208,10 +6124,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6288,10 +6200,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6368,10 +6276,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6869,10 +6773,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6949,10 +6849,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -7029,10 +6925,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -7109,10 +7001,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -7189,10 +7077,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -7269,10 +7153,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -7349,10 +7229,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -7429,10 +7305,6 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
-                                  },
-                                  version: {
-                                    description: "Version of the latest state for this fingerprint.",
-                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -10610,10 +10482,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -10709,10 +10577,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -10808,10 +10672,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -10907,10 +10767,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -11006,10 +10862,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -11105,10 +10957,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -11204,10 +11052,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -11303,10 +11147,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12334,10 +12174,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12433,10 +12269,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12532,10 +12364,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12631,10 +12459,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12730,10 +12554,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12829,10 +12649,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12928,10 +12744,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
@@ -13027,10 +12839,6 @@
                       team_id: {
                         description: None,
                         hidden: False
-                      },
-                      version: {
-                        description: "Version of the latest state for this fingerprint.",
-                        hidden: True
                       }
                     },
                     hidden: False,
