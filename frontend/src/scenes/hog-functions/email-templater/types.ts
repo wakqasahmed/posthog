@@ -2,12 +2,17 @@ import { Editor } from 'react-email-editor'
 
 type JSONTemplate = Parameters<Editor['loadDesign']>[0]
 
+export type EmailTemplateFrom = {
+    integrationId?: number
+    integrationIds?: number[]
+}
+
 export type EmailTemplate = {
     design: JSONTemplate | null
     html: string
     subject: string
     text: string
-    from: string
+    from: string | EmailTemplateFrom
     to: string
     replyTo?: string
     cc?: string

@@ -6,7 +6,14 @@ import { createPortal } from 'react-dom'
 import EmailEditor, { EditorRef } from 'react-email-editor'
 
 import { IconCollapse, IconExpand, IconExternal, IconPlus, IconX } from '@posthog/icons'
-import { LemonButton, LemonCard, LemonLabel, LemonModal, LemonSegmentedButton, LemonSelect } from '@posthog/lemon-ui'
+import {
+    LemonButton,
+    LemonCard,
+    LemonInputSelect,
+    LemonLabel,
+    LemonModal,
+    LemonSegmentedButton,
+} from '@posthog/lemon-ui'
 
 import { CyclotronJobTemplateSuggestionsButton } from 'lib/components/CyclotronJob/CyclotronJobTemplateSuggestions'
 import { integrationsLogic } from 'lib/integrations/integrationsLogic'
@@ -26,7 +33,7 @@ import { MessageTemplateCard } from 'products/workflows/frontend/TemplateLibrary
 import { collapseToolsPanelCustomJs } from './custom-tools/collapseToolsPanel'
 import { unsubscribeLinkToolCustomJs } from './custom-tools/unsubscribeLinkTool'
 import { EMAIL_TYPE_SUPPORTED_FIELDS, EmailTemplaterLogicProps, emailTemplaterLogic } from './emailTemplaterLogic'
-import { EmailFieldErrors } from './types'
+import { EmailFieldErrors, EmailTemplateFrom } from './types'
 
 export type EmailEditorMode = 'full' | 'preview'
 
@@ -236,19 +243,23 @@ function NativeEmailIntegrationChoice({
     onChange,
     value,
 }: {
-    onChange: (value: any) => void
-    value: any
+    onChange: (value: EmailTemplateFrom) => void
+    value?: EmailTemplateFrom
 }): JSX.Element {
     const { integrationsLoading, integrations } = useValues(integrationsLogic)
     const integrationsOfKind = integrations?.filter((x) => x.kind === 'email')
+    const selectedIntegrationIds = value?.integrationIds?.length
+        ? value.integrationIds
+        : value?.integrationId
+          ? [value.integrationId]
+          : []
 
-    const onChangeIntegration = (integrationId: number): void => {
-        if (integrationId === -1) {
-            // Open new integration modal
-            window.open(urls.workflows('channels'), '_blank')
-            return
-        }
-        onChange({ integrationId })
+    const onChangeIntegrations = (integrationIds: number[]): void => {
+        onChange({
+            ...value,
+            integrationId: integrationIds[0],
+            integrationIds: integrationIds.length > 1 ? integrationIds : undefined,
+        })
     }
 
     if (!integrationsLoading && integrationsOfKind?.length === 0) {
@@ -270,36 +281,33 @@ function NativeEmailIntegrationChoice({
     }
 
     return (
-        <>
-            <LemonSelect
+        <div className="flex flex-col flex-1">
+            <LemonInputSelect<number>
                 className="m-1 flex-1"
-                type="tertiary"
-                placeholder="Choose email sender"
+                mode="multiple"
+                placeholder="Choose email senders"
                 loading={integrationsLoading}
-                options={[
-                    {
-                        title: 'Email senders',
-                        options: (integrationsOfKind || []).map((integration) => ({
-                            label: integration.display_name,
-                            value: integration.id,
-                        })),
-                    },
-                    {
-                        options: [
-                            {
-                                label: 'Add new email sender',
-                                icon: <IconExternal />,
-                                value: -1,
-                            },
-                        ],
-                    },
-                ]}
-                value={value?.integrationId}
+                options={(integrationsOfKind || []).map((integration) => ({
+                    key: String(integration.id),
+                    label: integration.display_name,
+                    value: integration.id,
+                }))}
+                value={selectedIntegrationIds}
                 size="small"
                 fullWidth
-                onChange={onChangeIntegration}
+                autoWidth={false}
+                onChange={onChangeIntegrations}
+                data-attr="workflow-email-sender-select"
+                action={{
+                    children: 'Add new email sender',
+                    icon: <IconExternal />,
+                    onClick: () => window.open(urls.workflows('channels'), '_blank'),
+                }}
             />
-        </>
+            {selectedIntegrationIds.length > 1 && (
+                <span className="px-2 pb-1 text-xs text-muted">Each workflow run uses one sender from this list.</span>
+            )}
+        </div>
     )
 }
 

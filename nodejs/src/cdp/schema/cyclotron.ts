@@ -131,6 +131,7 @@ export const CyclotronInvocationQueueParametersEmailSchema = z.object({
     replyTo: z.string().optional(),
     from: z.object({
         integrationId: z.number(),
+        integrationIds: z.array(z.number()).optional(),
     }),
     cc: z.string().optional(),
     bcc: z.string().optional(),
