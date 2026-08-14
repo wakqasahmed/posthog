@@ -703,7 +703,7 @@ jobs:
         # test reachable from the changed files. A PR touching a scene component
         # can pull in much of the suite, so the budget must fit a near-full
         # unsharded run; the ready-for-review fanout shards well below it.
-        timeout-minutes: 20
+        timeout-minutes: 30
         needs: [changes, select-jest-tests]
         # A status function is required because select-jest-tests is skipped on ready
         # PRs and master pushes, and a skipped need would otherwise cascade a skip here.
