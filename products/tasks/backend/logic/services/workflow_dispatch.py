@@ -217,31 +217,39 @@ def mark_dead(dispatch_id: Any, instance_id: str, error: str, reason: str = "pay
         dispatch.save(update_fields=["status", "last_error", "claimed_by", "lease_expires_at", "updated_at"])
         WORKFLOW_DISPATCH_DEAD_TOTAL.labels(kind=dispatch.dispatch_kind, reason=reason).inc()
         run = dispatch.task_run
+        restored = False
         if dispatch.dispatch_kind == TaskWorkflowDispatch.Kind.RESTART:
-            _, snapshot = parse_restart_payload(dispatch.payload)
-            run.status = snapshot.status
-            run.environment = snapshot.environment
-            run.completed_at = datetime.fromisoformat(snapshot.completed_at) if snapshot.completed_at else None
-            run.queued_at = datetime.fromisoformat(snapshot.queued_at) if snapshot.queued_at else None
-            run.state = snapshot.state
-            run.error_message = "Failed to start cloud workflow"
-        else:
-            from products.tasks.backend.temporal.client import _terminalize_unstarted_task_run  # noqa: PLC0415
-
-            transaction.on_commit(lambda: _terminalize_unstarted_task_run(str(run.id), error[:2000]))
+            # Best-effort restore: a payload that no longer parses (a version bump or snapshot-field
+            # change overlapping an in-flight row) must not roll back the DEAD write above, or the
+            # dispatch re-claims and retries without end. Terminalize the run instead.
+            try:
+                _, snapshot = parse_restart_payload(dispatch.payload)
+                run.status = snapshot.status
+                run.environment = snapshot.environment
+                run.completed_at = datetime.fromisoformat(snapshot.completed_at) if snapshot.completed_at else None
+                run.queued_at = datetime.fromisoformat(snapshot.queued_at) if snapshot.queued_at else None
+                run.state = snapshot.state
+                run.error_message = "Failed to start cloud workflow"
+                restored = True
+            except (ValueError, KeyError, TypeError):
+                restored = False
+        if restored:
+            run.save(
+                update_fields=[
+                    "status",
+                    "environment",
+                    "completed_at",
+                    "queued_at",
+                    "state",
+                    "error_message",
+                    "updated_at",
+                ]
+            )
+            transaction.on_commit(run.publish_stream_state_event)
             return 1
-        run.save(
-            update_fields=[
-                "status",
-                "environment",
-                "completed_at",
-                "queued_at",
-                "state",
-                "error_message",
-                "updated_at",
-            ]
-        )
-        transaction.on_commit(run.publish_stream_state_event)
+        from products.tasks.backend.temporal.client import _terminalize_unstarted_task_run  # noqa: PLC0415
+
+        transaction.on_commit(lambda: _terminalize_unstarted_task_run(str(run.id), error[:2000]))
         return 1
 
 

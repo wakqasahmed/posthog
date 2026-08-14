@@ -11,12 +11,14 @@ from posthog.models.user import User
 
 from products.tasks.backend.facade.api import filter_uncovered_workflow_dispatch_run_ids, resume_task_run_in_cloud
 from products.tasks.backend.logic.services.workflow_dispatch import (
+    DISPATCH_PAYLOAD_VERSION,
     RestartSnapshot,
     WorkflowDispatchOptions,
     build_create_payload,
     build_restart_payload,
     create_dispatch,
     dispatch_exceeded_max_age,
+    mark_dead,
     parse_create_payload,
     parse_restart_payload,
     reschedule,
@@ -147,6 +149,30 @@ class TestWorkflowDispatchPersistence(TestCase):
         dispatch.refresh_from_db()
         self.assertEqual(dispatch.enqueued_at, reenqueued_at)
         self.assertFalse(dispatch_exceeded_max_age(dispatch, 6 * 60 * 60, now=reenqueued_at))
+
+    @patch("products.tasks.backend.temporal.client._terminalize_unstarted_task_run")
+    def test_mark_dead_terminalizes_restart_when_snapshot_no_longer_parses(self, terminalize: Mock) -> None:
+        with transaction.atomic():
+            dispatch = create_dispatch(
+                self.task_run,
+                TaskWorkflowDispatch.Kind.RESTART,
+                {"version": DISPATCH_PAYLOAD_VERSION, "snapshot": {"unexpected": "field"}},
+                self.task_run.workflow_id,
+            )
+        TaskWorkflowDispatch.objects.unscoped().filter(id=dispatch.id).update(
+            status=TaskWorkflowDispatch.Status.CLAIMED,
+            claimed_by="instance-1",
+            lease_expires_at=django_timezone.now() + timedelta(minutes=1),
+        )
+
+        with self.captureOnCommitCallbacks(execute=True):
+            result = mark_dead(dispatch.id, "instance-1", "payload broke", "payload")
+
+        self.assertEqual(result, 1)
+        dispatch.refresh_from_db()
+        self.assertEqual(dispatch.status, TaskWorkflowDispatch.Status.DEAD)
+        self.assertEqual(dispatch.claimed_by, "")
+        terminalize.assert_called_once_with(str(self.task_run.id), "payload broke")
 
     def test_oldest_ready_age_uses_latest_enqueue_time(self) -> None:
         now = django_timezone.now()
