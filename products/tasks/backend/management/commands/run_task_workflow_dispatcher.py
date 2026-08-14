@@ -2,6 +2,7 @@ import os
 import signal
 import socket
 import asyncio
+import logging
 import secrets
 from datetime import timedelta
 from functools import partial
@@ -40,6 +41,8 @@ from products.tasks.backend.metrics import (
 from products.tasks.backend.models import TaskRun, TaskWorkflowDispatch
 from products.tasks.backend.temporal.client import _capture_run_feature_flags
 from products.tasks.backend.temporal.process_task.workflow import ProcessTaskInput
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -86,8 +89,7 @@ class Command(BaseCommand):
                     in_flight_ids.add(dispatch.id)
                     task = asyncio.create_task(self._process(client, dispatch, instance_id, semaphore))
                     in_flight.add(task)
-                    task.add_done_callback(in_flight.discard)
-                    task.add_done_callback(partial(self._discard_dispatch_id, in_flight_ids, dispatch.id))
+                    task.add_done_callback(partial(self._on_dispatch_done, in_flight, in_flight_ids, dispatch))
         finally:
             if in_flight:
                 await asyncio.gather(*in_flight, return_exceptions=True)
@@ -104,8 +106,28 @@ class Command(BaseCommand):
                     await sync_to_async(renew_leases)(instance_id, list(dispatch_ids), lease)
 
     @staticmethod
-    def _discard_dispatch_id(dispatch_ids: set[object], dispatch_id: object, _task: asyncio.Task[None]) -> None:
-        dispatch_ids.discard(dispatch_id)
+    def _on_dispatch_done(
+        in_flight: set[asyncio.Task[None]],
+        dispatch_ids: set[object],
+        dispatch: TaskWorkflowDispatch,
+        task: asyncio.Task[None],
+    ) -> None:
+        in_flight.discard(task)
+        dispatch_ids.discard(dispatch.id)
+        if task.cancelled():
+            return
+        error = task.exception()
+        if error is None:
+            return
+        # An unhandled error in _process would otherwise surface only as an anonymous asyncio
+        # "Task exception was never retrieved" warning, with no outcome metric. The claim stays
+        # leased and is reclaimed by claim_dispatches once the lease expires.
+        logger.error(
+            "workflow_dispatch_worker_failed",
+            exc_info=error,
+            extra={"dispatch_id": str(dispatch.id), "task_run_id": str(dispatch.task_run_id)},
+        )
+        WORKFLOW_DISPATCH_ATTEMPT_TOTAL.labels(kind=dispatch.dispatch_kind, outcome="failed").inc()
 
     async def _process(
         self, client: Client, dispatch: TaskWorkflowDispatch, instance_id: str, semaphore: asyncio.Semaphore

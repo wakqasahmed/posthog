@@ -2,12 +2,16 @@ from unittest.mock import Mock, patch
 
 from django.test import SimpleTestCase
 
+from parameterized import parameterized
+
 from products.tasks.backend.logic.services.workflow_dispatch import (
     WorkflowDispatchOptions,
     build_create_payload,
     parse_create_payload,
     reschedule,
 )
+from products.tasks.backend.management.commands.run_task_workflow_dispatcher import Command
+from products.tasks.backend.metrics import WORKFLOW_DISPATCH_ATTEMPT_TOTAL
 from products.tasks.backend.temporal.process_task.workflow import PendingFollowup
 
 
@@ -47,3 +51,31 @@ class TestWorkflowDispatchPayload(SimpleTestCase):
         reschedule("dispatch-id", "instance-id", "error")
 
         uniform.assert_called_once_with(1.0, 256.0)
+
+
+class TestDispatcherCompletionCallback(SimpleTestCase):
+    @parameterized.expand(
+        [
+            ("failure", RuntimeError("connection reset"), 1),
+            ("success", None, 0),
+        ]
+    )
+    def test_completion_records_failure_outcome_only_on_exception(
+        self, name: str, exception: Exception | None, expected_delta: int
+    ) -> None:
+        task = Mock()
+        task.cancelled.return_value = False
+        task.exception.return_value = exception
+        dispatch = Mock(id=f"dispatch-{name}", task_run_id="run-1", dispatch_kind="create")
+        in_flight = {task}
+        in_flight_ids = {dispatch.id}
+
+        def failed_total() -> float:
+            return WORKFLOW_DISPATCH_ATTEMPT_TOTAL.labels(kind="create", outcome="failed")._value.get()
+
+        before = failed_total()
+        Command._on_dispatch_done(in_flight, in_flight_ids, dispatch, task)
+
+        self.assertEqual(failed_total() - before, expected_delta)
+        self.assertNotIn(task, in_flight)
+        self.assertNotIn(dispatch.id, in_flight_ids)
