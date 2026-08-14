@@ -1517,7 +1517,12 @@ class TestQueryLLMFormatting(ClickhouseTestMixin, APIBaseTest):
 class TestMcpProductTaggingEndToEnd(ClickhouseTestMixin, APIBaseTest):
     """End-to-end tests that an MCP request to the /query endpoint ends up tagged as
     product=mcp in `system.query_log` — *unless* a more specific product was set somewhere
-    along the way, in which case MCP must not override it."""
+    along the way, in which case MCP must not override it.
+
+    The HogQLQuery cases select now() rather than a constant, because a fully constant query is
+    answered by the local evaluator and never reaches system.query_log. now() also leaves the query
+    free of tables and events, so feature-based attribution stays out of the way and the fallback
+    chain under test is the one that runs."""
 
     ENDPOINT = "query"
 
@@ -1539,7 +1544,7 @@ class TestMcpProductTaggingEndToEnd(ClickhouseTestMixin, APIBaseTest):
         # so the fallback chain reaches the source=mcp branch and tags product=mcp.
         response = self.client.post(
             f"/api/environments/{self.team.id}/query/",
-            {"query": {"kind": "HogQLQuery", "query": "SELECT 1"}},
+            {"query": {"kind": "HogQLQuery", "query": "SELECT now()"}},
             HTTP_X_POSTHOG_CLIENT="mcp",
         )
 
@@ -1569,7 +1574,7 @@ class TestMcpProductTaggingEndToEnd(ClickhouseTestMixin, APIBaseTest):
             {
                 "query": {
                     "kind": "HogQLQuery",
-                    "query": "SELECT 1",
+                    "query": "SELECT now()",
                     "tags": {"scene": "SQLEditor"},
                 }
             },
@@ -1584,7 +1589,7 @@ class TestMcpProductTaggingEndToEnd(ClickhouseTestMixin, APIBaseTest):
     def test_non_mcp_request_does_not_set_product_to_mcp(self):
         response = self.client.post(
             f"/api/environments/{self.team.id}/query/",
-            {"query": {"kind": "HogQLQuery", "query": "SELECT 1"}},
+            {"query": {"kind": "HogQLQuery", "query": "SELECT now()"}},
         )
 
         self.assertEqual(response.status_code, 200)
