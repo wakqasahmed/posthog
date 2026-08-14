@@ -3314,6 +3314,11 @@ export interface TaskRunRelayMessageResponseApi {
     relay_id?: string
 }
 
+export interface TaskRunResumeStateSyncResponseApi {
+    /** Whether the resume state was stored */
+    ok: boolean
+}
+
 export interface PatchedTaskRunSetOutputRequestApi {
     /** Output data from the run. Validated against the task's json_schema if one is set. */
     output?: unknown
@@ -4445,6 +4450,8 @@ export type TasksRunsListParams = {
      */
     offset?: number
 }
+
+export type TasksRunsResumeStateRetrieve200 = { [key: string]: unknown }
 
 export type TasksRunsSessionLogsRetrieveParams = {
     /**
