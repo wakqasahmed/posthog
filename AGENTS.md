@@ -206,7 +206,7 @@ See [.agents/security.md](.agents/security.md) for security guidelines — least
 - Comments: never log change history or chat context in code — no "previously did X, now does Y", "per <task/PR>", "changed because…", or "AI:"/"agent:" notes. That goes in the commit message and PR description
 - Comments: when refactoring or moving code, preserve existing comments unless they are explicitly made obsolete by the change
 - Python tests: do not add doc comments
-- Python: do not create empty `__init__.py` files
+- Python: do not create empty `__init__.py` files, with one exception: the package markers import tooling needs — `products/`, every product's `backend/`, and their `facade/` and `presentation/` trees. `products/` carries one so file-based mypy resolves `products.<name>.backend` rather than `<name>.backend`; that makes it a regular package, and grimp then stops descending at the first directory without a marker, silently dropping everything below it from every import-linter contract. `hogli product:lint` enforces those markers. Everywhere else — test directories, generated trees — leave the file out
 - Python: consume dataclass results with dot notation (`result.field`), never by unpacking into positional locals (`a, b = result.a, result.b`), which reintroduces the swap hazard the dataclass exists to prevent. Mark secret fields with `field(repr=False)`
 - Python: name dataclasses after the domain concept, not the plumbing: `ClickHouseCredentials`, `BillingPeriod`, not `GetCredsResult` or `CredsTuple`. A `*Result` suffix only when the function's outcome genuinely is the concept; never `*Info`/`*Data`/`*Tuple`. Underscore-prefix classes private to one module
 - jest tests: when writing jest tests, prefer a single top-level describe block in a file
