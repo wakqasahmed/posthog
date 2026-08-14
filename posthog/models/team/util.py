@@ -1,8 +1,9 @@
 import time
 from datetime import timedelta
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.apps import apps
+from django.db import connections
 
 import structlog
 
@@ -11,6 +12,9 @@ from posthog.models.async_migration import is_async_migration_complete
 from posthog.temporal.common.client import sync_connect
 
 from products.batch_exports.backend.service import BatchExportServiceScheduleNotFound, batch_export_delete_schedule
+
+if TYPE_CHECKING:
+    from django.db.backends.base.base import BaseDatabaseWrapper
 
 logger = structlog.get_logger(__name__)
 
@@ -35,6 +39,37 @@ TEAM_DELETE_BATCH_SIZE = 2000
 # 30 min is orders of magnitude above any healthy single-batch DELETE yet 4x under the 2h
 # activity bound.
 TEAM_DELETE_RPC_TIMEOUT_SECONDS = 30 * 60
+
+# Tables whose Django models were dropped from migration state only, so both the table and its
+# foreign key on posthog_team still exist in Postgres. Django's cascade cannot see them any more,
+# and the constraint is DEFERRABLE INITIALLY DEFERRED, so a leftover row fails the team delete at
+# COMMIT with an IntegrityError instead of at the DELETE statement. Their rows are removed
+# explicitly, and each entry can go once the migration that drops its table has been deployed.
+RETIRED_TEAM_FK_TABLES = (
+    # products/replay/backend/migrations/0002_remove_session_summary_models.py
+    "ee_group_session_summary",
+    "ee_single_session_summary",
+    "ee_teamsessionsummariesconfig",
+    # products/tasks/backend/migrations/0069_remove_code_home_models.py
+    "posthog_code_pr_snapshot",
+    "posthog_code_workflow_config",
+    "posthog_code_workstream",
+    # posthog/migrations/1242_consolidate_duckgres_models_drop.py
+    "posthog_ducklakebackfill",
+    "posthog_ducklakecatalog",
+    # posthog/migrations/1285_drop_desktop_file_system.py
+    "posthog_filesystemfoldercontextgeneration",
+    "posthog_filesystemfolderinstructions",
+)
+
+# Same problem, but on a table that is still live: only the column was dropped from Django state,
+# so the rows belong to something other than the team and must survive. Both columns listed here
+# are nullable, so the reference is cleared rather than the row deleted.
+STALE_TEAM_FK_COLUMNS = (
+    # posthog/migrations/1242_consolidate_duckgres_models_drop.py removed DuckgresServer.team;
+    # the servers themselves now hang off the organization.
+    ("posthog_duckgresserver", "team_id"),
+)
 
 actions_that_require_current_team = [
     "rotate_secret_token",
@@ -324,6 +359,61 @@ def delete_batch_exports(team_ids: list[int]):
             )
 
 
+def clear_orphaned_team_references(team_ids: list[int], batch_size: int = 10000) -> None:
+    """Remove the teams' rows from the tables Django's cascade can no longer see.
+
+    Table and column names come from module constants, never from user input, so interpolating
+    them into the statements is safe.
+    """
+    if not team_ids:
+        return
+
+    db_connection = connections["default"]
+    for table in RETIRED_TEAM_FK_TABLES:
+        _run_batched_statement(
+            db_connection,
+            table,
+            f'DELETE FROM "{table}" WHERE ctid IN (SELECT ctid FROM "{table}" WHERE team_id = ANY(%s) LIMIT %s)',
+            team_ids,
+            batch_size,
+        )
+
+    for table, column in STALE_TEAM_FK_COLUMNS:
+        _run_batched_statement(
+            db_connection,
+            table,
+            f'UPDATE "{table}" SET "{column}" = NULL WHERE ctid IN '
+            f'(SELECT ctid FROM "{table}" WHERE "{column}" = ANY(%s) LIMIT %s)',
+            team_ids,
+            batch_size,
+        )
+
+
+def _run_batched_statement(
+    db_connection: "BaseDatabaseWrapper",
+    table: str,
+    statement: str,
+    team_ids: list[int],
+    batch_size: int,
+) -> None:
+    """Repeat `statement` until it stops matching rows.
+
+    The table is skipped when it no longer exists, so team deletion keeps working as the migrations
+    that drop these tables land.
+    """
+    with db_connection.cursor() as cursor:
+        cursor.execute("SELECT to_regclass(%s)", [table])
+        row = cursor.fetchone()
+        if row is None or row[0] is None:
+            return
+
+        while True:
+            cursor.execute(statement, [team_ids, batch_size])
+            if cursor.rowcount < batch_size:
+                return
+            time.sleep(0.1)
+
+
 def delete_team_records(team_ids: list[int]) -> None:
     """Delete the Team rows once their bulky child data has been removed.
 
@@ -333,6 +423,10 @@ def delete_team_records(team_ids: list[int]) -> None:
     from django.db import transaction
 
     from posthog.models.team import Team
+
+    # Runs in this activity rather than an earlier deletion phase so that deletions already stuck
+    # retrying the failing COMMIT recover on deploy, without a workflow reset.
+    clear_orphaned_team_references(team_ids)
 
     with transaction.atomic():
         list(Team.objects.select_for_update().filter(id__in=team_ids))
