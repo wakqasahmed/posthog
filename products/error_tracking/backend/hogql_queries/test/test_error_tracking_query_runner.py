@@ -61,6 +61,7 @@ from products.error_tracking.backend.models import (
     sync_issues_to_clickhouse,
     update_error_tracking_issue_fingerprints,
 )
+from products.error_tracking.backend.sql import INSERT_ERROR_TRACKING_FINGERPRINT_ISSUE_STATE
 
 from ee.models.rbac.access_control import AccessControl
 from ee.models.rbac.role import Role
@@ -243,6 +244,7 @@ class TestErrorTrackingQueryRunner(ClickhouseTestMixin, NonAtomicBaseTestKeepIde
                 [
                     "id",
                     "status",
+                    "severity",
                     "name",
                     "description",
                     "assignee_user_id",
@@ -260,6 +262,7 @@ class TestErrorTrackingQueryRunner(ClickhouseTestMixin, NonAtomicBaseTestKeepIde
                 [
                     "id",
                     "status",
+                    "severity",
                     "name",
                     "description",
                     "assignee_user_id",
@@ -281,6 +284,7 @@ class TestErrorTrackingQueryRunner(ClickhouseTestMixin, NonAtomicBaseTestKeepIde
                 [
                     "id",
                     "status",
+                    "severity",
                     "name",
                     "description",
                     "assignee_user_id",
@@ -299,6 +303,7 @@ class TestErrorTrackingQueryRunner(ClickhouseTestMixin, NonAtomicBaseTestKeepIde
                 [
                     "id",
                     "status",
+                    "severity",
                     "name",
                     "description",
                     "assignee_user_id",
@@ -701,6 +706,74 @@ class TestErrorTrackingQueryRunner(ClickhouseTestMixin, NonAtomicBaseTestKeepIde
             )
         )["results"]
         self.assertEqual(len(results), 1)
+
+    @freeze_time("2022-01-10T12:11:00")
+    def test_issue_severity_is_set_filter(self):
+        ErrorTrackingIssue.objects.filter(id=self.issue_id_one).update(severity=ErrorTrackingIssue.Severity.HIGH)
+        sync_issues_to_clickhouse(issue_ids=[self.issue_id_one], team_id=self.team.pk)
+
+        results = self._calculate(
+            filterGroup=PropertyGroupFilter(
+                type=FilterLogicalOperator.AND_,
+                values=[
+                    PropertyGroupFilterValue(
+                        type=FilterLogicalOperator.AND_,
+                        values=[
+                            ErrorTrackingIssueFilter(key="severity", value=True, operator=PropertyOperator.IS_SET),
+                        ],
+                    )
+                ],
+            )
+        )["results"]
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], self.issue_id_one)
+        self.assertEqual(results[0]["severity"], ErrorTrackingIssue.Severity.HIGH)
+
+    @freeze_time("2022-01-10T12:11:00")
+    def test_issue_severity_uses_newest_fingerprint_state(self):
+        issue = ErrorTrackingIssue.objects.get(id=self.issue_id_one)
+        issue.severity = ErrorTrackingIssue.Severity.HIGH
+        issue.save(update_fields=["severity"])
+
+        second_fingerprint = "issue_one_second_fingerprint"
+        ErrorTrackingIssueFingerprintV2.objects.create(
+            team=self.team,
+            issue=issue,
+            fingerprint=second_fingerprint,
+        )
+        _create_event(
+            distinct_id=self.distinct_id_one,
+            event="$exception",
+            team=self.team,
+            properties={"$exception_issue_id": self.issue_id_one, "$exception_fingerprint": second_fingerprint},
+            timestamp=now() - relativedelta(hours=1),
+        )
+        sync_issues_to_clickhouse(issue_ids=[self.issue_id_one], team_id=self.team.pk)
+        flush_persons_and_events()
+
+        sync_execute(
+            INSERT_ERROR_TRACKING_FINGERPRINT_ISSUE_STATE,
+            {
+                "fingerprint": self.issue_one_fingerprint,
+                "issue_id": self.issue_id_one,
+                "team_id": self.team.pk,
+                "issue_name": issue.name,
+                "issue_description": issue.description,
+                "issue_status": issue.status,
+                "issue_severity": ErrorTrackingIssue.Severity.CRITICAL,
+                "assigned_user_id": None,
+                "assigned_role_id": None,
+                "first_seen": "2022-01-10 12:11:00.000000",
+                "is_deleted": 0,
+                "version": 1641816660001,
+            },
+        )
+
+        results = self._calculate(issueId=self.issue_id_one)["results"]
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["severity"], ErrorTrackingIssue.Severity.CRITICAL)
 
     @parameterized.expand(
         [

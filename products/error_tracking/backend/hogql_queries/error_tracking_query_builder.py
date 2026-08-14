@@ -87,6 +87,22 @@ def _merge(state_alias: str, base_aggregator: str) -> ast.Call:
     return ast.Call(name=base_aggregator + _MERGE_SUFFIX, args=[ast.Field(chain=["ev", state_alias])])
 
 
+def _latest_nullable_issue_field(field_chain: list[str | int], version_chain: list[str | int]) -> ast.Call:
+    return ast.Call(
+        name="tupleElement",
+        args=[
+            ast.Call(
+                name="argMax",
+                args=[
+                    ast.Call(name="tuple", args=[ast.Field(chain=field_chain)]),
+                    ast.Field(chain=version_chain),
+                ],
+            ),
+            ast.Constant(value=1),
+        ],
+    )
+
+
 def _fingerprint_hash_expr() -> ast.Call:
     """Hash the fingerprint without resolving it to its materialized column.
 
@@ -154,6 +170,7 @@ class ErrorTrackingQueryBuilder:
                 {
                     "id": str(result_dict["id"]),
                     "status": result_dict.get("status"),
+                    "severity": result_dict.get("severity"),
                     "name": result_dict.get("name"),
                     "description": result_dict.get("description"),
                     "first_seen": result_dict.get("first_seen"),
@@ -418,14 +435,16 @@ class ErrorTrackingQueryBuilder:
         return exprs
 
     def _outer_select_expressions(self) -> list[ast.Expr]:
-        # `fp_state` is one row per fingerprint (LazyTable argmaxes by version);
-        # after GROUP BY issue_id, multiple fingerprints may collapse into one
-        # issue (issue merges). Per-issue scalar fields are picked with `any()`
-        # since they're constant per issue. `first_seen` uses `min()` across the
-        # merged fingerprints to preserve the earliest-known-first-seen.
+        # `fp_state` is one row per fingerprint, and issue merges can collapse multiple rows here.
+        # Severity updates for those rows can arrive separately, so choose the newest version.
+        # `first_seen` uses `min()` across merged fingerprints to preserve the earliest value.
         exprs: list[ast.Expr] = [
             ast.Alias(alias="id", expr=ast.Field(chain=["fp_state", "issue_id"])),
             ast.Alias(alias="status", expr=ast.Call(name="any", args=[ast.Field(chain=["fp_state", "issue_status"])])),
+            ast.Alias(
+                alias="severity",
+                expr=_latest_nullable_issue_field(["fp_state", "issue_severity"], ["fp_state", "version"]),
+            ),
             ast.Alias(alias="name", expr=ast.Call(name="any", args=[ast.Field(chain=["fp_state", "issue_name"])])),
             ast.Alias(
                 alias="description",
@@ -529,6 +548,10 @@ class ErrorTrackingQueryBuilder:
         exprs: list[ast.Expr] = [
             ast.Alias(alias="id", expr=ast.Field(chain=["e", "issue_id"])),
             ast.Alias(alias="status", expr=ast.Call(name="any", args=[ast.Field(chain=["e", "issue_status"])])),
+            ast.Alias(
+                alias="severity",
+                expr=_latest_nullable_issue_field(["e", "issue_severity"], ["e", "fingerprint_issue_state", "version"]),
+            ),
             ast.Alias(alias="name", expr=ast.Call(name="any", args=[ast.Field(chain=["e", "issue_name"])])),
             ast.Alias(
                 alias="description", expr=ast.Call(name="any", args=[ast.Field(chain=["e", "issue_description"])])
@@ -812,6 +835,7 @@ class ErrorTrackingQueryBuilder:
             "name": ["e", "issue_name"],
             "description": ["e", "issue_description"],
             "status": ["e", "issue_status"],
+            "severity": ["e", "issue_severity"],
             "first_seen": ["e", "issue_first_seen"],
         }
 
