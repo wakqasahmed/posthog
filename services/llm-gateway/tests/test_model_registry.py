@@ -385,7 +385,7 @@ class TestBasetenModelAdvertising:
         ("model_id", "context_window", "allowed_products"),
         [
             ("deepseek-ai/deepseek-v4-flash-0731", 1_048_000, ("review_hog", "posthog_code")),
-            # review_hog-only until Desktop grows a dedicated GLM 5.3 matcher
+            # review_hog-only: Desktop has no dedicated GLM 5.3 picker matcher
             ("zai-org/glm-5.3", 200_000, ("review_hog",)),
         ],
     )

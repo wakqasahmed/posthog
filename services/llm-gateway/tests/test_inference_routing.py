@@ -212,7 +212,7 @@ async def test_deepseek_does_not_apply_glm_anthropic_normalization() -> None:
 
 
 async def test_baseten_exclusive_glm_still_applies_anthropic_normalization() -> None:
-    # A Baseten-exclusive GLM is still a GLM — the Claude-runtime reasoning rewrite must apply.
+    # A Baseten-exclusive GLM is still a GLM: the Claude-runtime reasoning rewrite must apply.
     handle = AsyncMock(return_value={"ok": True})
     request = {
         "model": GLM53_MODEL,

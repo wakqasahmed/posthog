@@ -62,7 +62,7 @@ LlmCall = Callable[..., Awaitable[Any]]
 
 GLM_REASONING_EFFORTS: frozenset[str] = frozenset({"high", "max"})
 
-# GLM models across all backends — these need the Claude-runtime reasoning rewrite on the
+# GLM models across all backends: these need the Claude-runtime reasoning rewrite on the
 # Anthropic surface regardless of which provider serves them.
 GLM_MODELS: frozenset[str] = frozenset({BASETEN_PUBLIC_MODEL, BASETEN_GLM53_PUBLIC_MODEL})
 

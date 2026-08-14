@@ -3,6 +3,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi import HTTPException
 
+from llm_gateway.baseten import BASETEN_MODELS
+from llm_gateway.cloudflare import CLOUDFLARE_ALLOWED_MODELS
+from llm_gateway.inference_routing import is_inference_routed_model
+from llm_gateway.modal import is_modal_served_model
 from llm_gateway.products.config import (
     ALLOWED_PRODUCTS,
     BEDROCK_MODELS,
@@ -85,7 +89,7 @@ class TestCheckProductAccess:
             ),
             ("llm_gateway", "personal_api_key", None, "zai-org/glm-5.3", False, "not allowed"),
             ("review_hog", "personal_api_key", None, "zai-org/glm-5.3", True, None),
-            # review_hog-only until Desktop grows a dedicated GLM 5.3 matcher
+            # review_hog-only: Desktop has no dedicated GLM 5.3 picker matcher
             (
                 "posthog_code",
                 "oauth_access_token",
@@ -706,3 +710,21 @@ class TestModelAccessFlag:
     @pytest.mark.parametrize("model", [None, "", "gpt-5.2", "claude-opus-5", "@cf/zai-org/glm-5.2"])
     def test_ungated_models_need_no_flag(self, model: str | None):
         assert get_required_model_flag(model) is None
+
+    def test_suffixed_gated_model_ids_reach_no_backend(self):
+        # Product allowlists prefix-match while the access-flag gate matches exactly, so a
+        # suffixed id (e.g. zai-org/glm-5.3x) can pass the allowlist without a flag
+        # evaluation. Routing exactness is the backstop that keeps such ids unserved; this
+        # pins that invariant for every gated model. Literal vocabulary so a new gated
+        # model is added here consciously.
+        assert set(MODEL_ACCESS_FLAGS) == {
+            "moonshotai/kimi-k3",
+            "deepseek-ai/deepseek-v4-flash-0731",
+            "zai-org/glm-5.3",
+        }
+        for gated_model in MODEL_ACCESS_FLAGS:
+            suffixed = f"{gated_model}x"
+            assert not is_inference_routed_model(suffixed)
+            assert suffixed not in BASETEN_MODELS
+            assert not is_modal_served_model(suffixed)
+            assert suffixed not in CLOUDFLARE_ALLOWED_MODELS

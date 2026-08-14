@@ -99,10 +99,9 @@ _POSTHOG_CODE_AGENT_MODELS: Final[frozenset[str]] = frozenset(
 RESTRICTED_MODEL_PRODUCTS: Final[dict[str, frozenset[str]]] = {
     # Evaluated by ReviewHog; exposed in PostHog Code behind the posthog-code-deepseek-model flag.
     BASETEN_DEEPSEEK_PUBLIC_MODEL: frozenset({"posthog_code", "review_hog"}),
-    # ReviewHog-only for now: Desktop's picker reveals GLM models via the GLM 5.2 flag's
-    # substring matcher, so advertising to posthog_code before Desktop grows a dedicated
-    # GLM 5.3 matcher would surface a model every request 403s on. The Desktop change
-    # adds posthog_code here alongside the posthog-code-glm53-model flag.
+    # ReviewHog-only: Desktop's picker reveals GLM models via the GLM 5.2 flag's substring
+    # matcher, so advertising this to posthog_code without a dedicated Desktop matcher
+    # surfaces a model every request 403s on.
     BASETEN_GLM53_PUBLIC_MODEL: frozenset({"review_hog"}),
 }
 
