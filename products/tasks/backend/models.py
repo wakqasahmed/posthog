@@ -2635,7 +2635,9 @@ class TaskWorkflowDispatch(TeamScopedRootMixin):
         ACCEPTED = "accepted", "accepted"
         DEAD = "dead", "dead"
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # uuid7 rather than the uuid4 the sibling task models use: this outbox is insert-heavy, so a
+    # time-ordered primary key keeps B-tree appends local instead of scattering them.
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
     team = models.ForeignKey("posthog.Team", on_delete=models.CASCADE, db_constraint=False)
     task_run = models.ForeignKey(TaskRun, on_delete=models.CASCADE, related_name="workflow_dispatches")
     workflow_id = models.CharField(max_length=512)
