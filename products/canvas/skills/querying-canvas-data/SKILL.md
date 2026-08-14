@@ -38,7 +38,8 @@ Whatever tier you use, **declare it in the project's `capabilities`** before pub
 `captureEvents`, and `inlineQueries: true` for any `ph.query` use. The host rejects undeclared
 calls at runtime, and validation fails on undeclared literals.
 
-For a status board, set `refresh` to the cache lifetime in seconds. The minimum is 30 seconds:
+For a status board, set `refresh` to the cache lifetime in seconds. Use a whole number from 30 to
+86400 (one day); values outside that range, or fractional ones, fail at runtime:
 
 ```js
 await ph.loadInsight(shortId, { refresh: 30 })
