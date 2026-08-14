@@ -4908,6 +4908,7 @@ export interface ErrorTrackingCorrelatedIssueApi {
     name?: string | null
     odds_ratio: number
     population: PopulationApi
+    severity?: ErrorTrackingQueryIssueSeverityApi | null
     status: ErrorTrackingIssueStatusApi
 }
 

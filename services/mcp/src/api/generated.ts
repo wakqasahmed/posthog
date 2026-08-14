@@ -6302,6 +6302,7 @@ export namespace Schemas {
       name?: string | null;
       odds_ratio: number;
       population: Population;
+      severity?: ErrorTrackingQueryIssueSeverity | null;
       status: ErrorTrackingIssueStatus;
     }
 
