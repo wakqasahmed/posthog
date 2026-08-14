@@ -3907,6 +3907,7 @@ export interface ErrorTrackingRelationalIssue {
     description: string | null
     assignee: ErrorTrackingIssueAssignee | null
     status: ErrorTrackingIssueStatus
+    severity?: ErrorTrackingQueryIssueSeverity | null
     /**  @format date-time */
     first_seen: string
     external_issues?: ErrorTrackingExternalReference[]
@@ -3914,7 +3915,6 @@ export interface ErrorTrackingRelationalIssue {
 }
 
 export type ErrorTrackingIssue = ErrorTrackingRelationalIssue & {
-    severity?: ErrorTrackingQueryIssueSeverity | null
     /**  @format date-time */
     last_seen: string
     source?: string

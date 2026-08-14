@@ -3,11 +3,7 @@ import { MakeLogicType, actions, kea, listeners, path, reducers, selectors } fro
 import api from 'lib/api'
 import { ErrorTrackingFingerprint } from 'lib/components/Errors/types'
 
-import {
-    ErrorTrackingIssue,
-    ErrorTrackingPendingFingerprintIssueStateUpdate,
-    ErrorTrackingRelationalIssue,
-} from '~/queries/schema/schema-general'
+import { ErrorTrackingIssue, ErrorTrackingPendingFingerprintIssueStateUpdate } from '~/queries/schema/schema-general'
 
 import { errorTrackingIssueSceneLogic } from '../scenes/ErrorTrackingIssueScene/errorTrackingIssueSceneLogic'
 import { issuesDataNodeLogic } from './issuesDataNodeLogic'
@@ -151,10 +147,7 @@ export const pendingFingerprintIssueStateUpdateLogic = kea<pendingFingerprintIss
 ])
 
 function findCurrentIssueState(id: string): CurrentIssueState | null {
-    const detail = errorTrackingIssueSceneLogic.findMounted({ id })?.values.issue as
-        | (ErrorTrackingRelationalIssue & Pick<ErrorTrackingIssue, 'severity'>)
-        | null
-        | undefined
+    const detail = errorTrackingIssueSceneLogic.findMounted({ id })?.values.issue
     if (detail && detail.id === id) {
         return {
             id: detail.id,

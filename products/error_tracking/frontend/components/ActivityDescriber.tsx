@@ -54,9 +54,11 @@ function nameAndLink(logItem?: ActivityLogItem): JSX.Element {
     )
 }
 
-const errorTrackingIssueActionsMapping: Record<
-    keyof ErrorTrackingRelationalIssue,
-    (change?: ActivityChange, logItem?: ActivityLogItem) => ChangeMapping | null
+const errorTrackingIssueActionsMapping: Partial<
+    Record<
+        keyof ErrorTrackingRelationalIssue,
+        (change?: ActivityChange, logItem?: ActivityLogItem) => ChangeMapping | null
+    >
 > = {
     assignee: (change, logItem) => {
         const { before, after } = change || {}

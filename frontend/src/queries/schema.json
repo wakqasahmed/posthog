@@ -20819,6 +20819,16 @@
                     "required": ["both", "success_only", "exception_only", "neither"],
                     "type": "object"
                 },
+                "severity": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ErrorTrackingQueryIssueSeverity"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
                 "status": {
                     "$ref": "#/definitions/ErrorTrackingIssueStatus"
                 }
@@ -21559,6 +21569,16 @@
                 },
                 "name": {
                     "type": ["string", "null"]
+                },
+                "severity": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ErrorTrackingQueryIssueSeverity"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "status": {
                     "$ref": "#/definitions/ErrorTrackingIssueStatus"
