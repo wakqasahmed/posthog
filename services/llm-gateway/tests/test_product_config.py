@@ -85,6 +85,15 @@ class TestCheckProductAccess:
             ),
             ("llm_gateway", "personal_api_key", None, "zai-org/glm-5.3", False, "not allowed"),
             ("review_hog", "personal_api_key", None, "zai-org/glm-5.3", True, None),
+            # review_hog-only until Desktop grows a dedicated GLM 5.3 matcher
+            (
+                "posthog_code",
+                "oauth_access_token",
+                POSTHOG_CODE_US_APP_ID,
+                "zai-org/glm-5.3",
+                False,
+                "not allowed",
+            ),
             # ci allows API keys with any model (used by e2e test runs); OAuth rejected (no app IDs)
             ("ci", "personal_api_key", None, "claude-3-opus", True, None),
             ("ci", "oauth_access_token", "any-app-id", "gpt-4o", False, "not authorized"),
@@ -205,7 +214,6 @@ class TestCheckProductAccess:
             "gpt-5.2",
             "gpt-5-mini",
             "deepseek-ai/deepseek-v4-flash-0731",
-            "zai-org/glm-5.3",
         ],
     )
     def test_posthog_code_allows_restricted_models_with_valid_app_id(self, model: str):
@@ -542,7 +550,6 @@ class TestCheckFreeTierModelAccess:
             # Unbilled org on the Code surface: premium blocked, open model allowed
             ("posthog_code", "claude-fable-5", False, False, False),
             ("posthog_code", "@cf/zai-org/glm-5.2", False, False, True),
-            ("posthog_code", "zai-org/glm-5.3", False, False, True),
             ("posthog_code", "deepseek-ai/deepseek-v4-flash-0731", False, False, True),
             ("posthog_code", "moonshotai/kimi-k3", False, False, True),
             # The alias routes are the same surface - a URL spelling must not bypass

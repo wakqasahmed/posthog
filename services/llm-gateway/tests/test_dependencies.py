@@ -465,17 +465,18 @@ class TestBasetenExclusiveModelGateWiring:
     # behind its own access flag (not the GLM Baseten routing flag).
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
-        ("model", "access_flag"),
+        ("model", "access_flag", "path"),
         [
-            (BASETEN_DEEPSEEK_PUBLIC_MODEL, "posthog-code-deepseek-model"),
-            (BASETEN_GLM53_PUBLIC_MODEL, "posthog-code-glm53-model"),
+            (BASETEN_DEEPSEEK_PUBLIC_MODEL, "posthog-code-deepseek-model", "/posthog_code/v1/messages"),
+            # glm-5.3 is review_hog-only, so the gate is exercised on its real product route
+            (BASETEN_GLM53_PUBLIC_MODEL, "posthog-code-glm53-model", "/review_hog/v1/messages"),
         ],
     )
     @pytest.mark.parametrize("flag_result", [False, None])
     async def test_baseten_exclusive_model_blocked_when_flag_off_or_unavailable(
-        self, flag_result: bool | None, model: str, access_flag: str
+        self, flag_result: bool | None, model: str, access_flag: str, path: str
     ) -> None:
-        request = _make_request({"model": model, "messages": []}, path="/posthog_code/v1/messages")
+        request = _make_request({"model": model, "messages": []}, path=path)
         user = _make_user(auth_method="oauth_access_token", user_id=7)
 
         runner = MagicMock()
@@ -496,7 +497,8 @@ class TestBasetenExclusiveModelGateWiring:
     @pytest.mark.asyncio
     @pytest.mark.parametrize("model", [BASETEN_DEEPSEEK_PUBLIC_MODEL, BASETEN_GLM53_PUBLIC_MODEL])
     async def test_baseten_exclusive_model_allowed_when_flag_enabled(self, model: str) -> None:
-        request = _make_request({"model": model, "messages": []}, path="/posthog_code/v1/messages")
+        product_path = "/review_hog/v1/messages" if model == BASETEN_GLM53_PUBLIC_MODEL else "/posthog_code/v1/messages"
+        request = _make_request({"model": model, "messages": []}, path=product_path)
         user = _make_user(auth_method="oauth_access_token", user_id=7)
 
         runner = MagicMock()

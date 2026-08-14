@@ -203,7 +203,6 @@ class Settings(BaseSettings):
 
     posthog_code_free_tier_models: list[str] = [
         "@cf/zai-org/glm-5.2",
-        "zai-org/glm-5.3",
         "deepseek-ai/deepseek-v4-flash-0731",
         "moonshotai/kimi-k3",
     ]
