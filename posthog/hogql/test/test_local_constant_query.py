@@ -81,6 +81,7 @@ class TestLocalConstantQuery(TestCase):
             ("ordering", "SELECT 1 ORDER BY 1"),
             ("invalid filter type", "SELECT 1 WHERE -1"),
             ("mixed numeric array", "SELECT [1, 2.5]"),
+            ("mixed sign array", "SELECT [1, -1]"),
         ]
     )
     def test_returns_none_for_unsupported_query(self, _name: str, query: str) -> None:

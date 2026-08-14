@@ -133,6 +133,11 @@ def _evaluate_array(expression: ast.Array) -> _TypedValue:
 def _common_array_type(values: list[_TypedValue]) -> str:
     if all(type(value.value) is int for value in values):
         integers = [cast(int, value.value) for value in values]
+        if min(integers) < 0 <= max(integers):
+            # ClickHouse widens a mixed-sign integer array to a wider signed supertype than the
+            # combined range implies (e.g. [1, -1] is Array(Int16), not Array(Int8)), so defer to
+            # ClickHouse rather than report a type that would not match its output.
+            raise _UnsupportedLocalQuery
         return _integer_type_for_range(min(integers), max(integers))
 
     first_type = values[0].clickhouse_type
