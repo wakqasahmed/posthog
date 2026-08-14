@@ -286,10 +286,16 @@ pub async fn run_lease_keepalive(
     }
 }
 
-/// Count a freeze-quorum reference that resolved to no record. The
+/// Count one resolution that found no record — not one record lost. The
 /// handoff falls back to requiring every live router, so a nonzero rate
-/// explains a handoff that is slower to advance than its membership
-/// would suggest.
+/// explains a handoff slower to advance than its membership would
+/// suggest.
+///
+/// Read it as a rate, never as a population: every frozen partition
+/// referring to a lost record resolves once per reconcile pass, so a
+/// single missing record shows up as thousands per minute. That is the
+/// intent — the signal should persist while the condition does — but the
+/// magnitude says how much work is degraded, not how much is missing.
 pub fn record_unresolved_freeze_quorum() {
     metrics::counter!("personhog_coordination_unresolved_freeze_quorums_total").increment(1);
 }

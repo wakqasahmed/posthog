@@ -807,12 +807,15 @@ impl PersonhogStore {
                 // A hit answers from memory. Confirming against etcd
                 // would cost the read this cache exists to remove — one
                 // per frozen partition per reconcile pass — to observe a
-                // case the cache already neutralizes: if a record was
-                // swept while still referenced, a process holding it
-                // keeps using the correct membership. The counter below
-                // covers every process that has to read (a fresh leader
-                // after failover, or one whose entry was evicted), and
-                // the sweep counts its own deletions.
+                // case the cache already neutralizes: a process holding
+                // a swept record keeps using the correct membership.
+                // What a wrongly swept record does surface as is the
+                // sweep's own collection counter, and, for any process
+                // that has to read it, the unresolved counter below.
+                //
+                // A hit that resolved to nothing still counts, so the
+                // signal persists while the condition does rather than
+                // firing once and going quiet behind the cache.
                 let cached = self
                     .freeze_quorums
                     .lock()
