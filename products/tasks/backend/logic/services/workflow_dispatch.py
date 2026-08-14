@@ -101,10 +101,14 @@ def create_dispatch(task_run: TaskRun, kind: str, payload: dict[str, Any], workf
         )
         WORKFLOW_DISPATCH_CREATED_TOTAL.labels(kind=kind).inc()
         return dispatch
-    dispatch = TaskWorkflowDispatch.objects.for_team(task_run.team_id).create(
-        task_run=task_run, dispatch_kind=kind, **defaults
+    # A reused run (automation retries, a repeated start on a still-QUEUED run) would hit the
+    # uniq_dispatch_per_run_kind constraint with create(), so get the existing intent instead of
+    # raising. On the get path nothing is created, so the "rows created" counter stays accurate.
+    dispatch, created = TaskWorkflowDispatch.objects.for_team(task_run.team_id).get_or_create(
+        task_run=task_run, dispatch_kind=kind, defaults=defaults
     )
-    WORKFLOW_DISPATCH_CREATED_TOTAL.labels(kind=kind).inc()
+    if created:
+        WORKFLOW_DISPATCH_CREATED_TOTAL.labels(kind=kind).inc()
     return dispatch
 
 
