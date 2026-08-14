@@ -7,7 +7,7 @@ from starlette.datastructures import Headers
 
 from llm_gateway.auth.models import AuthenticatedUser
 from llm_gateway.auth.service import InvalidProjectScopeError, UnauthorizedProjectScopeError
-from llm_gateway.baseten import BASETEN_DEEPSEEK_PUBLIC_MODEL
+from llm_gateway.baseten import BASETEN_DEEPSEEK_PUBLIC_MODEL, BASETEN_GLM53_PUBLIC_MODEL
 from llm_gateway.dependencies import (
     _extract_end_user_id_from_body,
     enforce_product_access,
@@ -461,14 +461,21 @@ class TestBasetenExclusiveModelGateWiring:
         ):
             yield
 
-    # DeepSeek V4 Flash is Baseten-only with no fallback and isn't cleared for external rollout,
-    # so it's blocked behind its own access flag (not the GLM Baseten routing flag).
+    # Baseten-only models with no fallback aren't cleared for external rollout, so each is blocked
+    # behind its own access flag (not the GLM Baseten routing flag).
     @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("model", "access_flag"),
+        [
+            (BASETEN_DEEPSEEK_PUBLIC_MODEL, "posthog-code-deepseek-model"),
+            (BASETEN_GLM53_PUBLIC_MODEL, "posthog-code-glm53-model"),
+        ],
+    )
     @pytest.mark.parametrize("flag_result", [False, None])
-    async def test_baseten_exclusive_model_blocked_when_flag_off_or_unavailable(self, flag_result: bool | None) -> None:
-        request = _make_request(
-            {"model": BASETEN_DEEPSEEK_PUBLIC_MODEL, "messages": []}, path="/posthog_code/v1/messages"
-        )
+    async def test_baseten_exclusive_model_blocked_when_flag_off_or_unavailable(
+        self, flag_result: bool | None, model: str, access_flag: str
+    ) -> None:
+        request = _make_request({"model": model, "messages": []}, path="/posthog_code/v1/messages")
         user = _make_user(auth_method="oauth_access_token", user_id=7)
 
         runner = MagicMock()
@@ -484,13 +491,12 @@ class TestBasetenExclusiveModelGateWiring:
         assert exc_info.value.status_code == 403
         assert exc_info.value.detail["error"]["code"] == "model_gate"
         assert flag.await_args is not None
-        assert flag.await_args.args[0] == "posthog-code-deepseek-model"
+        assert flag.await_args.args[0] == access_flag
 
     @pytest.mark.asyncio
-    async def test_baseten_exclusive_model_allowed_when_flag_enabled(self) -> None:
-        request = _make_request(
-            {"model": BASETEN_DEEPSEEK_PUBLIC_MODEL, "messages": []}, path="/posthog_code/v1/messages"
-        )
+    @pytest.mark.parametrize("model", [BASETEN_DEEPSEEK_PUBLIC_MODEL, BASETEN_GLM53_PUBLIC_MODEL])
+    async def test_baseten_exclusive_model_allowed_when_flag_enabled(self, model: str) -> None:
+        request = _make_request({"model": model, "messages": []}, path="/posthog_code/v1/messages")
         user = _make_user(auth_method="oauth_access_token", user_id=7)
 
         runner = MagicMock()

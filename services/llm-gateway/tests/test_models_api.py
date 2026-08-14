@@ -388,6 +388,7 @@ class TestFreeTierModelListing:
         # and the annotation, or free-tier callers have no usable model
         assert {m["id"] for m in body["data"] if m["allowed"]} == {
             "@cf/zai-org/glm-5.2",
+            "zai-org/glm-5.3",
             "deepseek-ai/deepseek-v4-flash-0731",
         }
         # codex reads the `models` mirror; the marks must be there too

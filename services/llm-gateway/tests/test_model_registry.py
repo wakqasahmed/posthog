@@ -381,22 +381,29 @@ class TestCloudflareModelAdvertising:
 
 
 class TestBasetenModelAdvertising:
-    def test_deepseek_is_available_to_code_and_review_hog(self):
+    @pytest.mark.parametrize(
+        ("model_id", "context_window"),
+        [
+            ("deepseek-ai/deepseek-v4-flash-0731", 1_048_000),
+            ("zai-org/glm-5.3", 200_000),
+        ],
+    )
+    def test_baseten_exclusive_models_available_to_code_and_review_hog(self, model_id: str, context_window: int):
         with patch(
             "llm_gateway.services.model_registry.get_settings",
             return_value=create_mock_settings(baseten=True),
         ):
-            assert is_model_available("deepseek-ai/deepseek-v4-flash-0731", "review_hog") is True
-            assert is_model_available("deepseek-ai/deepseek-v4-flash-0731", "posthog_code") is True
-            assert is_model_available("deepseek-ai/deepseek-v4-flash-0731", "llm_gateway") is False
-            assert is_model_available("deepseek-ai/deepseek-v4-flash-0731", "slack_app") is False
+            assert is_model_available(model_id, "review_hog") is True
+            assert is_model_available(model_id, "posthog_code") is True
+            assert is_model_available(model_id, "llm_gateway") is False
+            assert is_model_available(model_id, "slack_app") is False
             for product in ("review_hog", "posthog_code"):
                 model = next(
                     model
                     for model in ModelRegistryService.get_instance().get_available_models(product)
-                    if model.id == "deepseek-ai/deepseek-v4-flash-0731"
+                    if model.id == model_id
                 )
-                assert model.context_window == 1_048_000
+                assert model.context_window == context_window
 
 
 class TestModelMatchesAllowlist:

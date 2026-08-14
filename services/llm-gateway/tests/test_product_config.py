@@ -83,6 +83,8 @@ class TestCheckProductAccess:
                 True,
                 None,
             ),
+            ("llm_gateway", "personal_api_key", None, "zai-org/glm-5.3", False, "not allowed"),
+            ("review_hog", "personal_api_key", None, "zai-org/glm-5.3", True, None),
             # ci allows API keys with any model (used by e2e test runs); OAuth rejected (no app IDs)
             ("ci", "personal_api_key", None, "claude-3-opus", True, None),
             ("ci", "oauth_access_token", "any-app-id", "gpt-4o", False, "not authorized"),
@@ -203,6 +205,7 @@ class TestCheckProductAccess:
             "gpt-5.2",
             "gpt-5-mini",
             "deepseek-ai/deepseek-v4-flash-0731",
+            "zai-org/glm-5.3",
         ],
     )
     def test_posthog_code_allows_restricted_models_with_valid_app_id(self, model: str):
@@ -210,10 +213,9 @@ class TestCheckProductAccess:
         assert allowed is True
         assert error is None
 
-    def test_slack_app_rejects_deepseek_despite_shared_allowlist(self):
-        allowed, error = check_product_access(
-            "slack_app", "oauth_access_token", POSTHOG_CODE_US_APP_ID, "deepseek-ai/deepseek-v4-flash-0731"
-        )
+    @pytest.mark.parametrize("model", ["deepseek-ai/deepseek-v4-flash-0731", "zai-org/glm-5.3"])
+    def test_slack_app_rejects_restricted_models_despite_shared_allowlist(self, model: str):
+        allowed, error = check_product_access("slack_app", "oauth_access_token", POSTHOG_CODE_US_APP_ID, model)
         assert allowed is False
         assert error is not None
         assert "not allowed" in error
@@ -540,6 +542,7 @@ class TestCheckFreeTierModelAccess:
             # Unbilled org on the Code surface: premium blocked, open model allowed
             ("posthog_code", "claude-fable-5", False, False, False),
             ("posthog_code", "@cf/zai-org/glm-5.2", False, False, True),
+            ("posthog_code", "zai-org/glm-5.3", False, False, True),
             ("posthog_code", "deepseek-ai/deepseek-v4-flash-0731", False, False, True),
             ("posthog_code", "moonshotai/kimi-k3", False, False, True),
             # The alias routes are the same surface - a URL spelling must not bypass
@@ -681,14 +684,17 @@ class TestModelAccessFlag:
             ("  moonshotai/kimi-k3  ", "moonshotai/kimi-k3"),
             ("deepseek-ai/deepseek-v4-flash-0731", "deepseek-ai/deepseek-v4-flash-0731"),
             ("DeepSeek-AI/DeepSeek-V4-Flash-0731", "deepseek-ai/deepseek-v4-flash-0731"),
+            ("zai-org/glm-5.3", "zai-org/glm-5.3"),
+            ("ZAI-Org/GLM-5.3", "zai-org/glm-5.3"),
         ],
     )
     def test_gated_model_requires_its_own_flag(self, model: str, gated: str):
         # each model resolves to its own dedicated access flag, not a shared one
         assert get_required_model_flag(model) == MODEL_ACCESS_FLAGS[gated]
 
-    def test_kimi_and_deepseek_use_distinct_flags(self):
-        assert MODEL_ACCESS_FLAGS["moonshotai/kimi-k3"] != MODEL_ACCESS_FLAGS["deepseek-ai/deepseek-v4-flash-0731"]
+    def test_every_gated_model_has_its_own_flag(self):
+        flags = list(MODEL_ACCESS_FLAGS.values())
+        assert len(flags) == len(set(flags))
 
     @pytest.mark.parametrize("model", [None, "", "gpt-5.2", "claude-opus-5", "@cf/zai-org/glm-5.2"])
     def test_ungated_models_need_no_flag(self, model: str | None):

@@ -29,6 +29,7 @@ from llm_gateway.api.handler import (
 from llm_gateway.auth.models import AuthenticatedUser
 from llm_gateway.baseten import (
     BASETEN_EXCLUSIVE_MODELS,
+    BASETEN_GLM53_PUBLIC_MODEL,
     BASETEN_PUBLIC_MODEL,
     ensure_baseten_configured,
     is_baseten_configured,
@@ -60,6 +61,10 @@ from llm_gateway.modal_routing import send_modal_request
 LlmCall = Callable[..., Awaitable[Any]]
 
 GLM_REASONING_EFFORTS: frozenset[str] = frozenset({"high", "max"})
+
+# GLM models across all backends — these need the Claude-runtime reasoning rewrite on the
+# Anthropic surface regardless of which provider serves them.
+GLM_MODELS: frozenset[str] = frozenset({BASETEN_PUBLIC_MODEL, BASETEN_GLM53_PUBLIC_MODEL})
 
 
 def is_inference_routed_model(model: str) -> bool:
@@ -178,7 +183,10 @@ async def send_inference_anthropic_messages(
     is_streaming: bool,
     product: str,
 ) -> dict[str, Any] | StreamingResponse:
-    if request_data["model"] not in BASETEN_EXCLUSIVE_MODELS:
+    # Skip normalization only for Baseten-exclusive non-GLM models (DeepSeek); a Baseten-exclusive
+    # GLM still needs the Claude-runtime reasoning rewrite.
+    model = request_data["model"]
+    if model in GLM_MODELS or model not in BASETEN_EXCLUSIVE_MODELS:
         request_data = normalize_glm_anthropic_request(request_data, product=product)
 
     return await _send_inference_request(
