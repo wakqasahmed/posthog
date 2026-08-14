@@ -39,8 +39,11 @@ then dies in the rendered canvas. Declare:
 - `capabilities.posthog.captureEvents` — every event name it passes to `ph.capture`.
 - `capabilities.posthog.inlineQueries: true` — when it calls `ph.query` at all.
 - `capabilities.network.origins` — each exact HTTPS origin used by `fetch` or `XMLHttpRequest`.
-  Do not include paths, credentials, queries, fragments, or wildcards. Data sent to a declared
-  origin leaves PostHog and appears in the capability review before promotion.
+  Do not include paths, credentials, queries, fragments, or wildcards. The host must be public:
+  loopback and private IPs, single-label names like `intranet`, and the `.local`, `.localhost`,
+  `.internal`, and `.home.arpa` suffixes are all rejected, so a local dev host such as
+  `https://localhost:8010` fails validation with an `invalid_network_origin` error. Data sent to a
+  declared origin leaves PostHog and appears in the capability review before promotion.
 
 Validation rejects undeclared literal calls (`capability_missing_*` diagnostics) so you can fix
 them before publishing; dynamic ids it can only warn about, so keep the declarations complete.
