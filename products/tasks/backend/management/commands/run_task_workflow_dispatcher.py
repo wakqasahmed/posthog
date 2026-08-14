@@ -103,7 +103,14 @@ class Command(BaseCommand):
                 await asyncio.wait_for(stop.wait(), timeout=20)
             except TimeoutError:
                 if dispatch_ids:
-                    await sync_to_async(renew_leases)(instance_id, list(dispatch_ids), lease)
+                    try:
+                        await sync_to_async(renew_leases)(instance_id, list(dispatch_ids), lease)
+                    except Exception:
+                        # A transient DB error (failover, connection reset, statement timeout) must not
+                        # end this loop. If it propagated, lease renewal would stop for the rest of the
+                        # process (leases expire, rows get re-claimed elsewhere) and `await renewer` at
+                        # shutdown would re-raise and skip release_claims. Log and retry on the next tick.
+                        logger.exception("workflow_dispatch_lease_renewal_failed", extra={"instance_id": instance_id})
 
     @staticmethod
     def _on_dispatch_done(
