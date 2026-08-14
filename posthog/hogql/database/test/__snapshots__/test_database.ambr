@@ -1316,9 +1316,11 @@
                       "issue_name",
                       "issue_description",
                       "issue_status",
+                      "issue_severity",
                       "assigned_user_id",
                       "assigned_role_id",
                       "first_seen",
+                      "version",
                       "fp_hash"
                   ],
                   "hogql_value": "fingerprint_issue_state",
@@ -11536,9 +11538,11 @@
                       "issue_name",
                       "issue_description",
                       "issue_status",
+                      "issue_severity",
                       "assigned_user_id",
                       "assigned_role_id",
                       "first_seen",
+                      "version",
                       "fp_hash"
                   ],
                   "hogql_value": "fingerprint_issue_state",
