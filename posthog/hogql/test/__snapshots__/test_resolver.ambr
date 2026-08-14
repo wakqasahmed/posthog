@@ -192,6 +192,10 @@
                             description: None,
                             hidden: False
                           },
+                          issue_severity: {
+                            description: None,
+                            hidden: True
+                          },
                           issue_status: {
                             description: None,
                             hidden: False
@@ -419,6 +423,10 @@
                                 description: "Display name of the issue (latest version).",
                                 hidden: False
                               },
+                              issue_severity: {
+                                description: "Assigned issue severity, or null when unassigned.",
+                                hidden: True
+                              },
                               issue_status: {
                                 description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                 hidden: False
@@ -426,6 +434,10 @@
                               team_id: {
                                 description: None,
                                 hidden: False
+                              },
+                              version: {
+                                description: "Version of the latest state for this fingerprint.",
+                                hidden: True
                               }
                             },
                             hidden: False,
@@ -491,6 +503,10 @@
                                 description: "Display name of the issue (latest version).",
                                 hidden: False
                               },
+                              issue_severity: {
+                                description: "Assigned issue severity, or null when unassigned.",
+                                hidden: True
+                              },
                               issue_status: {
                                 description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                 hidden: False
@@ -498,6 +514,10 @@
                               team_id: {
                                 description: None,
                                 hidden: False
+                              },
+                              version: {
+                                description: "Version of the latest state for this fingerprint.",
+                                hidden: True
                               }
                             },
                             hidden: False,
@@ -563,6 +583,10 @@
                                 description: "Display name of the issue (latest version).",
                                 hidden: False
                               },
+                              issue_severity: {
+                                description: "Assigned issue severity, or null when unassigned.",
+                                hidden: True
+                              },
                               issue_status: {
                                 description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                 hidden: False
@@ -570,6 +594,10 @@
                               team_id: {
                                 description: None,
                                 hidden: False
+                              },
+                              version: {
+                                description: "Version of the latest state for this fingerprint.",
+                                hidden: True
                               }
                             },
                             hidden: False,
@@ -635,6 +663,10 @@
                                 description: "Display name of the issue (latest version).",
                                 hidden: False
                               },
+                              issue_severity: {
+                                description: "Assigned issue severity, or null when unassigned.",
+                                hidden: True
+                              },
                               issue_status: {
                                 description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                 hidden: False
@@ -642,6 +674,10 @@
                               team_id: {
                                 description: None,
                                 hidden: False
+                              },
+                              version: {
+                                description: "Version of the latest state for this fingerprint.",
+                                hidden: True
                               }
                             },
                             hidden: False,
@@ -707,6 +743,10 @@
                                 description: "Display name of the issue (latest version).",
                                 hidden: False
                               },
+                              issue_severity: {
+                                description: "Assigned issue severity, or null when unassigned.",
+                                hidden: True
+                              },
                               issue_status: {
                                 description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                 hidden: False
@@ -714,6 +754,10 @@
                               team_id: {
                                 description: None,
                                 hidden: False
+                              },
+                              version: {
+                                description: "Version of the latest state for this fingerprint.",
+                                hidden: True
                               }
                             },
                             hidden: False,
@@ -779,6 +823,10 @@
                                 description: "Display name of the issue (latest version).",
                                 hidden: False
                               },
+                              issue_severity: {
+                                description: "Assigned issue severity, or null when unassigned.",
+                                hidden: True
+                              },
                               issue_status: {
                                 description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                 hidden: False
@@ -786,6 +834,10 @@
                               team_id: {
                                 description: None,
                                 hidden: False
+                              },
+                              version: {
+                                description: "Version of the latest state for this fingerprint.",
+                                hidden: True
                               }
                             },
                             hidden: False,
@@ -851,6 +903,10 @@
                                 description: "Display name of the issue (latest version).",
                                 hidden: False
                               },
+                              issue_severity: {
+                                description: "Assigned issue severity, or null when unassigned.",
+                                hidden: True
+                              },
                               issue_status: {
                                 description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                 hidden: False
@@ -858,6 +914,10 @@
                               team_id: {
                                 description: None,
                                 hidden: False
+                              },
+                              version: {
+                                description: "Version of the latest state for this fingerprint.",
+                                hidden: True
                               }
                             },
                             hidden: False,
@@ -923,6 +983,10 @@
                                 description: "Display name of the issue (latest version).",
                                 hidden: False
                               },
+                              issue_severity: {
+                                description: "Assigned issue severity, or null when unassigned.",
+                                hidden: True
+                              },
                               issue_status: {
                                 description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                 hidden: False
@@ -930,6 +994,10 @@
                               team_id: {
                                 description: None,
                                 hidden: False
+                              },
+                              version: {
+                                description: "Version of the latest state for this fingerprint.",
+                                hidden: True
                               }
                             },
                             hidden: False,
@@ -2459,6 +2527,10 @@
                     description: None,
                     hidden: False
                   },
+                  issue_severity: {
+                    description: None,
+                    hidden: True
+                  },
                   issue_status: {
                     description: None,
                     hidden: False
@@ -3199,6 +3271,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -3206,6 +3282,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3290,6 +3370,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -3297,6 +3381,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3381,6 +3469,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -3388,6 +3480,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3472,6 +3568,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -3479,6 +3579,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3563,6 +3667,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -3570,6 +3678,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3654,6 +3766,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -3661,6 +3777,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3745,6 +3865,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -3752,6 +3876,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -3836,6 +3964,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -3843,6 +3975,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -5430,6 +5566,10 @@
                                 description: None,
                                 hidden: False
                               },
+                              issue_severity: {
+                                description: None,
+                                hidden: True
+                              },
                               issue_status: {
                                 description: None,
                                 hidden: False
@@ -5657,6 +5797,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -5664,6 +5808,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -5729,6 +5877,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -5736,6 +5888,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -5801,6 +5957,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -5808,6 +5968,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -5873,6 +6037,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -5880,6 +6048,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -5945,6 +6117,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -5952,6 +6128,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6017,6 +6197,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -6024,6 +6208,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6089,6 +6277,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -6096,6 +6288,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6161,6 +6357,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -6168,6 +6368,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6423,6 +6627,10 @@
                                 description: None,
                                 hidden: False
                               },
+                              issue_severity: {
+                                description: None,
+                                hidden: True
+                              },
                               issue_status: {
                                 description: None,
                                 hidden: False
@@ -6650,6 +6858,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -6657,6 +6869,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6722,6 +6938,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -6729,6 +6949,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6794,6 +7018,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -6801,6 +7029,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6866,6 +7098,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -6873,6 +7109,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -6938,6 +7178,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -6945,6 +7189,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -7010,6 +7258,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -7017,6 +7269,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -7082,6 +7338,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -7089,6 +7349,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -7154,6 +7418,10 @@
                                     description: "Display name of the issue (latest version).",
                                     hidden: False
                                   },
+                                  issue_severity: {
+                                    description: "Assigned issue severity, or null when unassigned.",
+                                    hidden: True
+                                  },
                                   issue_status: {
                                     description: "Current status of the issue, e.g. 'active', 'resolved'.",
                                     hidden: False
@@ -7161,6 +7429,10 @@
                                   team_id: {
                                     description: None,
                                     hidden: False
+                                  },
+                                  version: {
+                                    description: "Version of the latest state for this fingerprint.",
+                                    hidden: True
                                   }
                                 },
                                 hidden: False,
@@ -9583,6 +9855,10 @@
                     description: None,
                     hidden: False
                   },
+                  issue_severity: {
+                    description: None,
+                    hidden: True
+                  },
                   issue_status: {
                     description: None,
                     hidden: False
@@ -10323,6 +10599,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -10330,6 +10610,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -10414,6 +10698,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -10421,6 +10709,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -10505,6 +10797,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -10512,6 +10808,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -10596,6 +10896,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -10603,6 +10907,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -10687,6 +10995,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -10694,6 +11006,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -10778,6 +11094,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -10785,6 +11105,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -10869,6 +11193,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -10876,6 +11204,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -10960,6 +11292,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -10967,6 +11303,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -11237,6 +11577,10 @@
                     issue_name: {
                       description: None,
                       hidden: False
+                    },
+                    issue_severity: {
+                      description: None,
+                      hidden: True
                     },
                     issue_status: {
                       description: None,
@@ -11979,6 +12323,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -11986,6 +12334,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12070,6 +12422,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -12077,6 +12433,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12161,6 +12521,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -12168,6 +12532,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12252,6 +12620,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -12259,6 +12631,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12343,6 +12719,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -12350,6 +12730,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12434,6 +12818,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -12441,6 +12829,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12525,6 +12917,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -12532,6 +12928,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12616,6 +13016,10 @@
                         description: "Display name of the issue (latest version).",
                         hidden: False
                       },
+                      issue_severity: {
+                        description: "Assigned issue severity, or null when unassigned.",
+                        hidden: True
+                      },
                       issue_status: {
                         description: "Current status of the issue, e.g. 'active', 'resolved'.",
                         hidden: False
@@ -12623,6 +13027,10 @@
                       team_id: {
                         description: None,
                         hidden: False
+                      },
+                      version: {
+                        description: "Version of the latest state for this fingerprint.",
+                        hidden: True
                       }
                     },
                     hidden: False,
@@ -12894,6 +13302,10 @@
                       issue_name: {
                         description: None,
                         hidden: False
+                      },
+                      issue_severity: {
+                        description: None,
+                        hidden: True
                       },
                       issue_status: {
                         description: None,
@@ -13190,6 +13602,10 @@
                       issue_name: {
                         description: None,
                         hidden: False
+                      },
+                      issue_severity: {
+                        description: None,
+                        hidden: True
                       },
                       issue_status: {
                         description: None,
@@ -13834,6 +14250,10 @@
                     description: None,
                     hidden: False
                   },
+                  issue_severity: {
+                    description: None,
+                    hidden: True
+                  },
                   issue_status: {
                     description: None,
                     hidden: False
@@ -14165,6 +14585,10 @@
                     issue_name: {
                       description: None,
                       hidden: False
+                    },
+                    issue_severity: {
+                      description: None,
+                      hidden: True
                     },
                     issue_status: {
                       description: None,
@@ -14501,6 +14925,10 @@
                       issue_name: {
                         description: None,
                         hidden: False
+                      },
+                      issue_severity: {
+                        description: None,
+                        hidden: True
                       },
                       issue_status: {
                         description: None,
@@ -14877,6 +15305,10 @@
                               issue_name: {
                                 description: None,
                                 hidden: False
+                              },
+                              issue_severity: {
+                                description: None,
+                                hidden: True
                               },
                               issue_status: {
                                 description: None,
@@ -15260,6 +15692,10 @@
                     description: None,
                     hidden: False
                   },
+                  issue_severity: {
+                    description: None,
+                    hidden: True
+                  },
                   issue_status: {
                     description: None,
                     hidden: False
@@ -15610,6 +16046,10 @@
                     issue_name: {
                       description: None,
                       hidden: False
+                    },
+                    issue_severity: {
+                      description: None,
+                      hidden: True
                     },
                     issue_status: {
                       description: None,
@@ -15963,6 +16403,10 @@
                     description: None,
                     hidden: False
                   },
+                  issue_severity: {
+                    description: None,
+                    hidden: True
+                  },
                   issue_status: {
                     description: None,
                     hidden: False
@@ -16298,6 +16742,10 @@
                     issue_name: {
                       description: None,
                       hidden: False
+                    },
+                    issue_severity: {
+                      description: None,
+                      hidden: True
                     },
                     issue_status: {
                       description: None,
@@ -16747,6 +17195,10 @@
                       description: None,
                       hidden: False
                     },
+                    issue_severity: {
+                      description: None,
+                      hidden: True
+                    },
                     issue_status: {
                       description: None,
                       hidden: False
@@ -17039,6 +17491,10 @@
                         issue_name: {
                           description: None,
                           hidden: False
+                        },
+                        issue_severity: {
+                          description: None,
+                          hidden: True
                         },
                         issue_status: {
                           description: None,
@@ -17354,6 +17810,10 @@
                   issue_name: {
                     description: None,
                     hidden: False
+                  },
+                  issue_severity: {
+                    description: None,
+                    hidden: True
                   },
                   issue_status: {
                     description: None,
