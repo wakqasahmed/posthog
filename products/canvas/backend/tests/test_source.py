@@ -152,6 +152,10 @@ class TestCanvasSourceAdapter(SimpleTestCase):
             ("localhost", "https://localhost:8010"),
             ("single_label", "https://intranet"),
             ("mdns_suffix", "https://printer.local"),
+            # A delimiter in the hostname would break out of the connect-src it is
+            # spliced into. This form carries no wildcard, so only the hostname
+            # charset check rejects it.
+            ("csp_directive_injection", "https://example.com; img-src evil.example.net"),
         ]
     )
     def test_rejects_network_origins_that_are_not_exact_https_origins(self, _name, origin):
