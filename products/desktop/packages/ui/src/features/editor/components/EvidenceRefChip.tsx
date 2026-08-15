@@ -35,10 +35,11 @@ import {
 const SPARK_W = 100;
 const SPARK_H = 30;
 const SPARK_PAD = 2;
-// PostHog's first data-viz color, same source quill-charts reads; the hex
-// fallback keeps the spark on-brand where the theme variable isn't defined
-// (the tooltip portals outside the theme root).
-const SPARK_COLOR = "var(--data-color-1, #1d4aff)";
+// Surfaces with their own palette (the quick-ask panel) set
+// --evidence-spark-color; everywhere else PostHog's first data-viz color
+// applies, with a hex fallback because the tooltip portals outside the
+// theme root.
+const SPARK_COLOR = "var(--evidence-spark-color, var(--data-color-1, #1d4aff))";
 
 /** Mini chart of the preview's primary series: a line for time series, columns for categories. */
 function Sparkline({
@@ -57,12 +58,12 @@ function Sparkline({
 
   if (render === "bar") {
     const step = SPARK_W / points.length;
-    const gap = Math.min(step * 0.25, 2);
+    const barWidth = step * 0.62;
     return (
       <svg
         viewBox={`0 0 ${SPARK_W} ${SPARK_H}`}
         preserveAspectRatio="none"
-        className="h-9 w-full"
+        className="my-1 h-8 w-full"
         role="img"
         aria-label="Column sparkline"
         data-testid="evidence-sparkline"
@@ -71,12 +72,13 @@ function Sparkline({
           <rect
             // biome-ignore lint/suspicious/noArrayIndexKey: static series, never reorders
             key={index}
-            x={index * step + gap / 2}
-            width={step - gap}
+            x={(index * step + (step - barWidth) / 2).toFixed(1)}
+            width={barWidth.toFixed(1)}
             y={scaleY(point)}
             height={Math.max(SPARK_H - SPARK_PAD - scaleY(point), 0.5)}
+            rx={1.2}
             fill={SPARK_COLOR}
-            fillOpacity={0.85}
+            fillOpacity={0.82}
           />
         ))}
       </svg>
@@ -101,7 +103,7 @@ function Sparkline({
     <svg
       viewBox={`0 0 ${SPARK_W} ${SPARK_H}`}
       preserveAspectRatio="none"
-      className="h-9 w-full"
+      className="my-1 h-8 w-full"
       role="img"
       aria-label="Trend sparkline"
       data-testid="evidence-sparkline"
