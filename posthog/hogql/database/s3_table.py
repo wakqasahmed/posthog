@@ -178,6 +178,11 @@ def _duckdb_csv_type_for_clickhouse_type(clickhouse_type: str) -> str | None:
     if type_name == "Float64":
         return "DOUBLE"
     if type_name.startswith("DateTime"):
+        datetime64_match = re.fullmatch(r"DateTime64\((\d+)(?:\s*,\s*'[^']*')?\)", type_name)
+        # DuckDB TIMESTAMP holds microseconds, so a DateTime64(7-9) column would truncate the
+        # nanoseconds the ClickHouse reader keeps. TIMESTAMP_NS matches it; coarser precisions fit.
+        if datetime64_match is not None and int(datetime64_match.group(1)) >= 7:
+            return "TIMESTAMP_NS"
         return "TIMESTAMP"
 
     decimal_match = re.fullmatch(r"Decimal\((\d+)\s*,\s*(\d+)\)", type_name)
