@@ -3793,6 +3793,7 @@ describe("SessionService", () => {
             isCloud: true,
             logUrl: "https://logs.example.com/run-123",
             processedLineCount: 14,
+            transcriptWindowStart: 0,
           }),
         );
       });
